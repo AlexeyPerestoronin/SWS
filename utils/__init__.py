@@ -93,18 +93,17 @@ def prepare_saving_groups(unique_bodies: UniqueBodiesManager.UniqueBodies, save_
             if valid_model_name.assembly_name:
                 assembly_names_set.add(valid_model_name.assembly_name)
 
-        step_file_name = "{assembly_name} {model_name} {folder_name} {body_name} [{quantity}]".format(
+        step_file_name = "{assembly_name} {model_name} {folder_name} {body_name}".format(
             assembly_name='+'.join(assembly_names_set),
             model_name='+'.join(models_names_set),
             folder_name='+'.join(folders_names_set),
             body_name='+'.join(bodies_names_set),
-            quantity=quantity,
         )\
         .replace('  ', ' ', -1)\
         .strip()
 
         new_save_path = save_folder / pathlib.Path(step_file_name).with_suffix(".step")
-        for (body, _, save_path) in result:
+        for (body, _, _, save_path) in result:
             if new_save_path == save_path:
                 raise Exception(f"step path '{new_save_path}' for rep-body '{reference_body.name}' is already reserved by body '{body.name}'")
         result.append((reference_body, quantity, reference_component, new_save_path))
