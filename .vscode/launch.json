@@ -4,29 +4,45 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "console": "integratedTerminal",
-    "program": "${workspaceFolder}/.venv/Scripts/invoke.exe",
-    "cwd": "${workspaceFolder}",
     "configurations": [
         {
             "name": "Debug: export.step-from-part",
             "type": "debugpy",
             "request": "launch",
+            "program": "${workspaceFolder}/.venv/Scripts/invoke.exe",
+            "cwd": "${workspaceFolder}",
             "args": [
                 "export.step-from-part",
                 "--execute",
-                "--path", "${workspaceFolder}/../SWP/Projects/МАСТЕРСКАЯ/Canopy/Крыша.SLDPRT",
-                "--save-subfolder", "STEP-3",
+                "--path",
+                "${workspaceFolder}/../SWP/Projects/МАСТЕРСКАЯ/Canopy/Крыша.SLDPRT",
+                "--save-subfolder",
+                "STEP-3",
             ],
         },
         {
             "name": "Debug: export.step-from-assembly",
             "type": "debugpy",
             "request": "launch",
+            "program": "${workspaceFolder}/.venv/Scripts/invoke.exe",
+            "cwd": "${workspaceFolder}",
             "args": [
                 "export.step-from-assembly",
                 "--execute",
-                "--path", "${workspaceFolder}/../SWP/Projects/МАСТЕРСКАЯ/Canopy/Canopy-TI.SLDASM",
-                "--save-subfolder", "STEP-1",
+                "--path",
+                "${workspaceFolder}/../SWP/Projects/МАСТЕРСКАЯ/Canopy/Canopy-TI.SLDASM",
+                "--save-subfolder",
+                "STEP-1",
+            ],
+        },
+        {
+            "name": "Debug: projects.mm-v-iv.make-doc",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/.venv/Scripts/invoke.exe",
+            "cwd": "${workspaceFolder}",
+            "args": [
+                "projects.mm-v-iv.make-doc"
             ],
         }
     ]

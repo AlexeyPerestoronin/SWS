@@ -26,7 +26,7 @@ class UniqueBodiesManager:
         components = assembly.get_components(True)
         while len(components) > 0:
             component = components.pop(0)
-            print(f"component name is '{component.name2}'")
+            print(f"component detected '{component.name2}'")
             component_type = component.get_type()
             if component_type == SWDocumentTypesE.SW_DOC_PART:
                 self.add_from_component(component)

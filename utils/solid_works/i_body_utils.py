@@ -19,13 +19,12 @@ def is_two_body_equal(body1: IBody2, body2: IBody2) -> bool:
     return result
 
 
-def get_equal_bodies_groups(bodies: List[IBody2], show_log: bool = True) -> List[List[IBody2]]:
+def get_equal_bodies_groups(bodies: List[IBody2]) -> List[List[IBody2]]:
     """
     Groups a list of SolidWorks solid bodies (IBody2) into unique sets based on geometric coincidence.
 
     Args:
         bodies (List[IBody2]): list of SW bodies for selection of unique
-        show_log (bool): if True - the working log will be printed in the consol
 
     Returns:
         List[List[IBody2]]: List of lists of same bodies
