@@ -23,3 +23,7 @@ namespace.add_collection(export.collection, name="export")
 import check
 
 namespace.add_collection(check.collection, name="check")
+
+import projects
+
+namespace.add_collection(projects.collection, name="projects")
