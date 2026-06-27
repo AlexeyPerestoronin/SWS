@@ -72,7 +72,7 @@ def validate_and_parse_body_name(body: IBody2) -> ValidBodyName:
         return main_name
 
     def check_name_suffixes(body_suffixes: List[str]) -> str:
-        available_suffixes = [r'R', r'L', r'U', r'D', r'F', r'B', r'\d+']
+        available_suffixes = [r'R', r'П', r'L', r'Л', r'U', r'В', r'D', r'Н', r'F', r'B', r'\d+']
         for body_suffix in body_suffixes:
             if any([bool(re.match(available_suffix, body_suffix)) for available_suffix in available_suffixes]):
                 return body_suffix

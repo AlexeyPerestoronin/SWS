@@ -36,7 +36,7 @@ def validate_and_parse_model_name(model: IModelDoc2) -> ValidModelName:
     """
 
     model_name = model.get_path_name().stem
-    model_name_pattern = r'(?P<model_name>[A-ZА-ЯЁ]\w+(-[A-ZА-ЯЁ]\w+)*)(\^(?P<assembly_name>[A-ZА-ЯЁ]\w+(-[A-ZА-ЯЁ]\w+)*))?'
+    model_name_pattern = r'(?P<model_name>[A-ZА-ЯЁ](\w|\d)*(-[A-ZА-ЯЁ](\w|\d)*)*)(\^(?P<assembly_name>[A-ZА-ЯЁ](\w|\d)*(-[A-ZА-ЯЁ](\w|\d)*)*))?'
     match = re.fullmatch(model_name_pattern, model_name)
     if match:
         groups = match.groupdict()

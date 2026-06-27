@@ -24,7 +24,7 @@ def validate_project_naming(model: IModelDoc2):
     """
 
     model_name = model.get_path_name().stem
-    model_name_pattern = r'[A-ZА-ЯЁ]\w+(-[A-ZА-ЯЁ]\w+)*'
+    model_name_pattern = r'[A-ZА-ЯЁ](\w|\d)*(-[A-ZА-ЯЁ](\w|\d)*)*'
     if not bool(re.fullmatch(model_name_pattern, model_name)):
         raise Exception(f"model name '{model_name}' does not match by regular expression: {model_name_pattern}")
     return True

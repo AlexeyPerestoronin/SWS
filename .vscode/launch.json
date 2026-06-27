@@ -42,7 +42,8 @@
             "program": "${workspaceFolder}/.venv/Scripts/invoke.exe",
             "cwd": "${workspaceFolder}",
             "args": [
-                "projects.mm-v-iv.make-doc"
+                "projects.z-lift-v-iii.create-metal-tech-task"
+                // "projects.mm-v-iv.make-doc"
                 // "projects.tests.test-1"
             ],
         }

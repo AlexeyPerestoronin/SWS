@@ -50,7 +50,7 @@ def validate_and_parse_component_name(component: IComponent2) -> ValidComponentN
             raise Exception(f"impossible extract assembly number from component '{component_name}'")
         return ValidComponentName(valid_model_name, assembly_numbers)
     except Exception as error:
-        raise Exception(f"body name '{component_name}' has unsatisfied condition -> {error}")
+        raise Exception(f"component name '{component_name}' has unsatisfied condition -> {error}")
 
 
 def get_solid_body_folders_in_component(component: IComponent2, use_cache: bool = True) -> List[IBodyFolder]:
