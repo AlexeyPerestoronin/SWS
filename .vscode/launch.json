@@ -43,6 +43,7 @@
             "cwd": "${workspaceFolder}",
             "args": [
                 "projects.mm-v-iv.make-doc"
+                // "projects.tests.test-1"
             ],
         }
     ]

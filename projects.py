@@ -10,4 +10,6 @@ def load_project_task(project_tasks_file_path: pathlib.Path, project_name: str):
     module_specification.loader.exec_module(module)
     collection.add_collection(module.collection, name=project_name)
 
-load_project_task(pathlib.Path(r"C:\MyLife\SWP\Projects\МАСТЕРСКАЯ\Проект 4\automated.py"), "mm_v_iv")
+load_project_task(pathlib.Path(r"C:\MyLife\SWP\Projects\Тесты\automated.py"), "tests")
+load_project_task(pathlib.Path(r"C:\MyLife\SWP\Projects\МАСТЕРСКАЯ\Инженерная-Стенка\V4\automated.py"), "mm_v_iv")
+load_project_task(pathlib.Path(r"C:\MyLife\SWP\Projects\МАСТЕРСКАЯ\Кинематический-Верстак\Z-Лифт\V3\automated.py"), "z_lift_v_iii")
