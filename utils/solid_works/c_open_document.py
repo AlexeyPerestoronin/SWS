@@ -5,7 +5,7 @@ from pyswx import PySWX
 from pyswx.api.sldworks.interfaces import ISldWorks, IModelDoc2, IAssemblyDoc, IDocumentSpecification
 from pyswx.api.swconst.enumerations import SWFileLoadWarningE, SWDocumentTypesE
 
-from ..logger import STATUS
+from ..logger import status
 
 __all__ = [
     'connect_to_sw2025',
@@ -48,12 +48,12 @@ class OpenDocument:
         assert self.__root_model
 
         self.__already_open = bool(warning and warning == SWFileLoadWarningE.SW_FILELOADWARNING_ALREADY_OPEN)
-        STATUS.log_line(f"{'connect to' if self.__already_open else 'open existing'} SW-project {path}")
+        status.log_line(f"{'connect to' if self.__already_open else 'open existing'} SW-project {path}")
 
     def __del__(self):
         if self.__already_open is False:
             self.sw.close_doc(self.__path)
-        STATUS.log_line(f"{'disconnect from' if self.__already_open else 'close active'} SW project {self.__path}")
+        status.log_line(f"{'disconnect from' if self.__already_open else 'close active'} SW project {self.__path}")
 
     @property
     def sw(self) -> ISldWorks:

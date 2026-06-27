@@ -77,10 +77,10 @@ def prepare_saving_groups(unique_bodies: UniqueBodiesManager.UniqueBodies, save_
         folders_names_set: Set[str] = set()
         bodies_names_set: Set[str] = set()
         quantity = len(same_bodies)
-        STATUS.log_line(f"Detected {quantity} same bodies:")
+        status.log_line(f"Detected {quantity} same bodies:")
         for same_body in same_bodies:
             (reference_body, reference_component) = same_body
-            STATUS.log_line(f"* body '{reference_body.name}' in component '{reference_component.name2}'")
+            status.log_line(f"* body '{reference_body.name}' in component '{reference_component.name2}'")
             bodies_names_set.add(validate_and_parse_body_name(reference_body).main_name)
             if not reference_component.referenced_configuration:
                 body_folder = detect_folder_for_body_in_model(reference_component.get_model_doc2(), reference_body)
@@ -107,5 +107,5 @@ def prepare_saving_groups(unique_bodies: UniqueBodiesManager.UniqueBodies, save_
             if new_save_path == save_path:
                 raise Exception(f"step path '{new_save_path}' for rep-body '{reference_body.name}' is already reserved by body '{body.name}'")
         result.append((reference_body, quantity, reference_component, new_save_path))
-        STATUS.log_line(f"+ defined common save path is '{new_save_path}'")
+        status.log_line(f"+ defined common save path is '{new_save_path}'")
     return result

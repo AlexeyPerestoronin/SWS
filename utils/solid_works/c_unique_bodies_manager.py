@@ -30,11 +30,11 @@ class UniqueBodiesManager:
             component_type = component.get_type()
             if component_type == SWDocumentTypesE.SW_DOC_PART:
                 self.add_from_component(component)
-            elif component_type == SWDocumentTypesE.SW_DOC_ASSEMBLY:
+            elif component_type in (SWDocumentTypesE.SW_DOC_ASSEMBLY, SWDocumentTypesE.SW_DOC_NONE):
                 for sub_component in component.get_children():
                     components.append(sub_component)
             else:
-                raise Exception(f"unexpected type of mode: f{component_type}")
+                raise Exception(f"unexpected component-type '{component_type}' for component {component.name2}")
 
     def add_from_model(self, model: IModelDoc2):
         """

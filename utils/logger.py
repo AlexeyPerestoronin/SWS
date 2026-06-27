@@ -2,11 +2,11 @@ import colorama
 from enum import Enum
 
 __all__ = [
-    'SUCCESS',
-    'STATUS',
-    'INFO',
-    'WARNING',
-    'ERROR',
+    'success',
+    'status',
+    'info',
+    'warning',
+    'error',
 ]
 
 
@@ -43,8 +43,8 @@ class Logger:
         return self
 
 
-SUCCESS = Logger(Color.GREEN)
-STATUS = Logger(Color.CYAN)
-INFO = Logger(Color.BLUE)
-WARNING = Logger(Color.YELLOW)
-ERROR = Logger(Color.RED)
+success = Logger(Color.GREEN)
+status = Logger(Color.CYAN)
+info = Logger(Color.BLUE)
+warning = Logger(Color.YELLOW)
+error = Logger(Color.RED)

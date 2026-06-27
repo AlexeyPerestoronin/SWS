@@ -36,9 +36,9 @@ def step_from_part(ctx, path: str = None, save_subfolder: str = None, execute: b
         for (reference_body, _, reference_component, step_path) in save_paths_and_bodies:
             try:
                 utils.save_body_from_component_like_step(reference_component, reference_body, step_path)
-                utils.SUCCESS.log_line(f"step file created: {step_path}")
+                utils.success.log_line(f"step file created: {step_path}")
             except Exception as error:
-                utils.ERROR.log_line(f"step file wasn't created: {error}")
+                utils.error.log_line(f"step file wasn't created: {error}")
 
 
 @invoke.task(
@@ -72,9 +72,9 @@ def step_from_assembly(ctx, path: str = None, save_subfolder: str = None, execut
         for (reference_body, _, reference_component, step_path) in save_paths_and_bodies:
             try:
                 utils.save_body_from_component_like_step(reference_component, reference_body, step_path)
-                utils.SUCCESS.log_line(f"step file created: {step_path}")
+                utils.success.log_line(f"step file created: {step_path}")
             except Exception as error:
-                utils.ERROR.log_line(f"step file wasn't created: {error}")
+                utils.error.log_line(f"step file wasn't created: {error}")
 
 
 collection = invoke.Collection()
