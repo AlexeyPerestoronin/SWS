@@ -60,7 +60,7 @@ def longest_common_substring(strings: List[str]) -> str:
     return functools.reduce(lcs_pair, strings)
 
 
-Quantity: TypeAlias = int # quantity of the same body in group
+Quantity: TypeAlias = int  # quantity of the same body in group
 SavingGroup: TypeAlias = Tuple[IBody2, Quantity, IComponent2, pathlib.Path]
 SavingGroups: TypeAlias = List[SavingGroup]
 
