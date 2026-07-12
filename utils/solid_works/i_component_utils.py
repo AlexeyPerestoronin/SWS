@@ -1,6 +1,6 @@
 import re, pathlib
-from typing import TypeAlias, List, Optional
-from pyswx.api.sldworks.interfaces import IComponent2, IBodyFolder, IBody2
+from typing import TypeAlias, List, Optional, Protocol
+from pyswx.api.sldworks.interfaces import IComponent2, IBodyFolder, IBody2, IFace2
 from pyswx.api.swconst.enumerations import SWBodyFolderFeatureTypE, SWBodyTypeE, SWSaveAsOptionsE, SWSaveAsVersionE
 
 from .i_model_doc_utils import ValidModelName, validate_and_parse_model_name
@@ -12,6 +12,9 @@ __all__ = [
     'get_solid_body_folders_in_component',
     'detect_folder_for_body_in_component',
     'save_body_from_component_like_step',
+    'IFaceDetectionProtocol',
+    'FaceWithLargestSurfaceOnSheetBodyDetecter',
+    'save_body_from_component_like_dxf',
 ]
 
 
@@ -87,9 +90,9 @@ def detect_folder_for_body_in_component(component: IComponent2, body: IBody2, us
         f"cannot detect folder for the body '{body.name}' in the component '{component.name2}': list of component's folders is {[folder.get_feature().name for folder in folders]}")
 
 
-def save_body_from_component_like_step(component: IComponent2, body: IBody2, step_save_path: pathlib.Path):
+def detect_root_body_in_component(component: IComponent2, body: IBody2) -> IBody2:
     """
-    Export a specific body from component as STEP file by matching equivalent root body.
+    TODO: provide some comment
     """
     try:
         root_model = component.get_model_doc2()
@@ -105,14 +108,83 @@ def save_body_from_component_like_step(component: IComponent2, body: IBody2, ste
         root_bodies = root_component.get_bodies2(SWBodyTypeE.SW_SOLID_BODY)
         for root_body in root_bodies:
             if i_body_utils.is_two_body_equal(root_body, body):
-                root_model.clear_selection2(True)
-                root_body.select_2(False)
-                root_model.extension.save_as_3(name=step_save_path,
-                                               version=SWSaveAsVersionE.SW_SAVE_AS_CURRENT_VERSION,
-                                               options=SWSaveAsOptionsE.SW_SAVE_AS_OPTIONS_SILENT,
-                                               export_data=None,
-                                               advanced_save_as_options=None)
-                return
-        raise Exception(f"cannot detect root-body in root-model for reference-body '{body.name}'")
+                return root_body
     except Exception as error:
-        raise Exception(f"cannot save '{body.name}'-body in step file '{step_save_path}': {error}")
+        raise Exception(f"cannot detect root-body in component-'{component.name2}' by reference-body-'{body.name}'")
+
+
+def save_body_from_component_like_step(component: IComponent2, body: IBody2, step_save_path: pathlib.Path):
+    """
+    Export a specific body from component as STEP file by matching equivalent root body.
+    """
+    try:
+        root_model = component.get_model_doc2()
+        root_body = detect_root_body_in_component(component, body)
+        root_model.clear_selection2(True)
+        root_body.select_2(False)
+        root_model.extension.save_as_3(name=step_save_path,
+                                       version=SWSaveAsVersionE.SW_SAVE_AS_CURRENT_VERSION,
+                                       options=SWSaveAsOptionsE.SW_SAVE_AS_OPTIONS_SILENT,
+                                       export_data=None,
+                                       advanced_save_as_options=None)
+    except Exception as error:
+        raise Exception(f"cannot save '{body.name}'-body in STEP file '{step_save_path}': {error}")
+
+
+class IFaceDetectionProtocol(Protocol):
+    """
+    TODO: provide some verbose comment
+    """
+
+    def __call__(self, body_faces: List[IFace2]) -> IFace2:
+        ...
+
+
+class FaceWithLargestSurfaceOnSheetBodyDetecter(IFaceDetectionProtocol):
+    """
+    TODO: provide some verbose comment
+    """
+
+    def __call__(self, body_faces: List[IFace2]) -> IFace2:
+        surfaces_info = []
+        for face in body_faces:
+            surface = face.get_surface()
+            surfaces_info.append([face.get_area(), surface.is_plane(), face])
+        surfaces_info = sorted(surfaces_info, key=lambda x: x[0], reverse=True)
+        s_1st = surfaces_info[0]
+        s_2nd = surfaces_info[1]
+        s_3rd = surfaces_info[2]
+        if not (s_1st[1] is True and s_2nd[1] is True):
+            raise Exception(f'first two surfaces should be planar')
+        if not (s_1st[0] == s_2nd[0] and s_2nd[0] != s_3rd[0]):
+            raise Exception(f'first two surfaces should be equal and be greater then other')
+        return s_1st[2]
+
+
+def save_body_from_component_like_dxf(component: IComponent2,
+                                      body: IBody2,
+                                      dxf_save_path: pathlib.Path,
+                                      target_face_detecter: IFaceDetectionProtocol = FaceWithLargestSurfaceOnSheetBodyDetecter()):
+    """
+    TODO: provide some verbose comment
+    """
+    try:
+        root_model = component.get_model_doc2()
+        root_body = detect_root_body_in_component(component, body)
+        root_model.clear_selection2(True)
+        target_face = target_face_detecter(root_body.get_faces())
+
+        root_model.clear_selection2(True)
+        selection_manager = root_model.com_object.SelectionManager
+        selected_data = selection_manager.CreateSelectData
+        success = target_face.com_object.Select4(False, selected_data)
+        # assert success
+
+        path_name = 'C:/MyLife/SWP/Projects/МАСТЕРСКАЯ/DOC_for_workbench_1000x600/Верстак-Dim1000x600x50 уголок-6мм-3x3.dxf'
+        model_name = root_model.com_object.GetPathName
+        # alignment = [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1]
+        alignment = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        success = root_model.com_object.ExportToDWG2(path_name, model_name, 2, True, alignment, False, False, 0, None)
+        assert success
+    except Exception as error:
+        raise Exception(f"cannot save '{body.name}'-body in DFX file '{dxf_save_path}': {error}")
