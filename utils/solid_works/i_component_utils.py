@@ -175,14 +175,8 @@ def save_body_from_component_like_dxf(component: IComponent2,
         target_face = target_face_detecter(root_body.get_faces())
 
         root_model.clear_selection2(True)
-        success = target_face.select_4(False, root_model.selection_manager.create_select_data())
-        # assert success
-
-        path_name = 'C:/MyLife/SWP/Projects/МАСТЕРСКАЯ/DOC_for_workbench_1000x600/Верстак-Dim1000x600x50 уголок-6мм-3x3.dxf'
-        model_name = root_model.com_object.GetPathName
-        # alignment = [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1]
-        alignment = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        success = root_model.com_object.ExportToDWG2(path_name, model_name, 2, True, alignment, False, False, 0, None)
-        assert success
+        assert target_face.select_4(False, root_model.selection_manager.create_select_data())
+        dxf_save_path = pathlib.Path('C:/MyLife/SWP/Projects/МАСТЕРСКАЯ/DOC_for_workbench_1000x600/Верстак-Dim1000x600x50 уголок-6мм-3x3.dxf')
+        assert root_model.export_to_DXF(dxf_save_path)
     except Exception as error:
         raise Exception(f"cannot save '{body.name}'-body in DFX file '{dxf_save_path}': {error}")
