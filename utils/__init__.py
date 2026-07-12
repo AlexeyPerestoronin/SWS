@@ -1,6 +1,6 @@
 import re, difflib, functools, pathlib
 
-from typing import List, Tuple, Set, TypeAlias
+from typing import List, Tuple, Set, TypeAlias, Protocol
 from pyswx.api.sldworks.interfaces import IModelDoc2, IComponent2, IBody2
 from pyswx.api.sldworks.interfaces import IModelDoc2, IBodyFolder
 
@@ -112,7 +112,28 @@ def prepare_saving_groups(unique_bodies: UniqueBodiesManager.UniqueBodies, save_
     return result
 
 
-def prepare_saving_groups_2(unique_bodies: UniqueBodiesManager.UniqueBodies) -> SavingGroups:
+class SaveFileNameCreator(Protocol):
+    """Callable that builds an export file name from component/body sets."""
+
+    def __call__(self, assembly_names_set: Set[str], models_names_set: Set[str], folders_names_set: Set[str], bodies_names_set: Set[str], quantity: int) -> str:
+        ...
+
+
+class ComplexSaveFileNameCreator(SaveFileNameCreator):
+    """Default implementation that joins all name parts with `+`."""
+
+    def __call__(self, assembly_names_set: Set[str], models_names_set: Set[str], folders_names_set: Set[str], bodies_names_set: Set[str], quantity: int) -> str:
+        return "{assembly_name} {model_name} {folder_name} {body_name}".format(
+            assembly_name='+'.join(assembly_names_set),
+            model_name='+'.join(models_names_set),
+            folder_name='+'.join(folders_names_set),
+            body_name='+'.join(bodies_names_set),
+        )\
+        .replace('  ', ' ', -1)\
+        .strip()
+
+
+def prepare_saving_groups_2(unique_bodies: UniqueBodiesManager.UniqueBodies, save_file_name_creator: SaveFileNameCreator = ComplexSaveFileNameCreator()) -> SavingGroups:
     """
     Prepare unique export paths for groups of identical bodies across components.
     """
@@ -140,15 +161,7 @@ def prepare_saving_groups_2(unique_bodies: UniqueBodiesManager.UniqueBodies) -> 
             if valid_model_name.assembly_name:
                 assembly_names_set.add(valid_model_name.assembly_name)
 
-        save_file_name = "{assembly_name} {model_name} {folder_name} {body_name}".format(
-            assembly_name='+'.join(assembly_names_set),
-            model_name='+'.join(models_names_set),
-            folder_name='+'.join(folders_names_set),
-            body_name='+'.join(bodies_names_set),
-        )\
-        .replace('  ', ' ', -1)\
-        .strip()
-        save_file_name = pathlib.Path(save_file_name)
+        save_file_name = pathlib.Path(save_file_name_creator(assembly_names_set, models_names_set, folders_names_set, bodies_names_set, quantity))
 
         for (body, _, _, registered_save_file_name) in result:
             if save_file_name == registered_save_file_name:

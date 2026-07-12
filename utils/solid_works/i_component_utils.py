@@ -91,9 +91,8 @@ def detect_folder_for_body_in_component(component: IComponent2, body: IBody2, us
 
 
 def detect_root_body_in_component(component: IComponent2, body: IBody2) -> IBody2:
-    """
-    TODO: provide some comment
-    """
+    """Return an equivalent *root* body from the owning root component"""
+
     try:
         root_model = component.get_model_doc2()
         active_configuration = root_model.configuration_manager.active_configuration
@@ -132,18 +131,14 @@ def save_body_from_component_like_step(component: IComponent2, body: IBody2, ste
 
 
 class IFaceDetectionProtocol(Protocol):
-    """
-    TODO: provide some verbose comment
-    """
+    """Callable interface for selecting a face from a set of body faces"""
 
     def __call__(self, body_faces: List[IFace2]) -> IFace2:
         ...
 
 
 class FaceWithLargestSurfaceOnSheetBodyDetecter(IFaceDetectionProtocol):
-    """
-    TODO: provide some verbose comment
-    """
+    """Selects a face suitable for DXF export from a sheet-like body"""
 
     def __call__(self, body_faces: List[IFace2]) -> IFace2:
         surfaces_info = []
@@ -165,9 +160,8 @@ def save_body_from_component_like_dxf(component: IComponent2,
                                       body: IBody2,
                                       dxf_save_path: pathlib.Path,
                                       target_face_detecter: IFaceDetectionProtocol = FaceWithLargestSurfaceOnSheetBodyDetecter()):
-    """
-    TODO: provide some verbose comment
-    """
+    """Export a single body from a component as DXF"""
+
     try:
         root_model = component.get_model_doc2()
         root_body = detect_root_body_in_component(component, body)
