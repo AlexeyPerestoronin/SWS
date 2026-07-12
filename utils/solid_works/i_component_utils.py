@@ -175,9 +175,7 @@ def save_body_from_component_like_dxf(component: IComponent2,
         target_face = target_face_detecter(root_body.get_faces())
 
         root_model.clear_selection2(True)
-        selection_manager = root_model.com_object.SelectionManager
-        selected_data = selection_manager.CreateSelectData
-        success = target_face.com_object.Select4(False, selected_data)
+        success = target_face.select_4(False, root_model.selection_manager.create_select_data())
         # assert success
 
         path_name = 'C:/MyLife/SWP/Projects/МАСТЕРСКАЯ/DOC_for_workbench_1000x600/Верстак-Dim1000x600x50 уголок-6мм-3x3.dxf'
