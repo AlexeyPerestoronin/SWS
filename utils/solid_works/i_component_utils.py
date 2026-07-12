@@ -1,4 +1,4 @@
-import re, pathlib
+import re, pathlib, math
 from typing import TypeAlias, List, Optional, Protocol
 from pyswx.api.sldworks.interfaces import IComponent2, IBodyFolder, IBody2, IFace2
 from pyswx.api.swconst.enumerations import SWBodyFolderFeatureTypE, SWBodyTypeE, SWSaveAsOptionsE, SWSaveAsVersionE
@@ -156,7 +156,7 @@ class FaceWithLargestSurfaceOnSheetBodyDetecter(IFaceDetectionProtocol):
         s_3rd = surfaces_info[2]
         if not (s_1st[1] is True and s_2nd[1] is True):
             raise Exception(f'first two surfaces should be planar')
-        if not (s_1st[0] == s_2nd[0] and s_2nd[0] != s_3rd[0]):
+        if not (math.isclose(s_1st[0], s_2nd[0], abs_tol=1e-10) and s_2nd[0] > s_3rd[0]):
             raise Exception(f'first two surfaces should be equal and be greater then other')
         return s_1st[2]
 
@@ -176,7 +176,6 @@ def save_body_from_component_like_dxf(component: IComponent2,
 
         root_model.clear_selection2(True)
         assert target_face.select_4(False, root_model.selection_manager.create_select_data())
-        dxf_save_path = pathlib.Path('C:/MyLife/SWP/Projects/МАСТЕРСКАЯ/DOC_for_workbench_1000x600/Верстак-Dim1000x600x50 уголок-6мм-3x3.dxf')
         assert root_model.export_to_DXF(dxf_save_path)
     except Exception as error:
         raise Exception(f"cannot save '{body.name}'-body in DFX file '{dxf_save_path}': {error}")
