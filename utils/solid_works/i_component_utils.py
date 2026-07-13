@@ -117,6 +117,8 @@ def save_body_from_component_like_step(component: IComponent2, body: IBody2, ste
     Export a specific body from component as STEP file by matching equivalent root body.
     """
     try:
+        step_save_path.parent.mkdir(parents=True, exist_ok=True)
+
         root_model = component.get_model_doc2()
         root_body = detect_root_body_in_component(component, body)
         root_model.clear_selection2(True)
@@ -163,6 +165,8 @@ def save_body_from_component_like_dxf(component: IComponent2,
     """Export a single body from a component as DXF"""
 
     try:
+        dxf_save_path.parent.mkdir(parents=True, exist_ok=True)
+
         root_model = component.get_model_doc2()
         root_body = detect_root_body_in_component(component, body)
         root_model.clear_selection2(True)
