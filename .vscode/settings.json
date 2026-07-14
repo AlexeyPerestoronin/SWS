@@ -4,6 +4,8 @@
         "FILELOADWARNING",
         "pyswx",
         "pythoncom",
+        "SLDASM",
+        "SLDPRT",
         "sldworks",
         "swconst",
         "venv",

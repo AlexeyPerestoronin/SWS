@@ -137,35 +137,38 @@ def prepare_saving_groups_2(unique_bodies: UniqueBodiesManager.UniqueBodies, sav
     """
     Prepare unique export paths for groups of identical bodies across components.
     """
-    result: SavingGroups = []
-    for same_bodies in unique_bodies:
-        (reference_body, reference_component) = same_bodies[0]
-        assembly_names_set: Set[str] = set()
-        models_names_set: Set[str] = set()
-        folders_names_set: Set[str] = set()
-        bodies_names_set: Set[str] = set()
-        quantity = len(same_bodies)
-        status.log_line(f"Detected {quantity} same bodies:")
-        for same_body in same_bodies:
-            (reference_body, reference_component) = same_body
-            status.log_line(f"* body '{reference_body.name}' in component '{reference_component.name2}'")
-            bodies_names_set.add(validate_and_parse_body_name(reference_body).main_name)
-            if not reference_component.referenced_configuration:
-                body_folder = detect_folder_for_body_in_model(reference_component.get_model_doc2(), reference_body)
-            else:
-                body_folder = detect_folder_for_body_in_component(reference_component, reference_body)
-            if body_folder:
-                folders_names_set.add(body_folder)
-            valid_model_name = validate_and_parse_component_name(reference_component).valid_model_name
-            models_names_set.add(valid_model_name.model_name)
-            if valid_model_name.assembly_name:
-                assembly_names_set.add(valid_model_name.assembly_name)
+    try:
+        result: SavingGroups = []
+        for same_bodies in unique_bodies:
+            (reference_body, reference_component) = same_bodies[0]
+            assembly_names_set: Set[str] = set()
+            models_names_set: Set[str] = set()
+            folders_names_set: Set[str] = set()
+            bodies_names_set: Set[str] = set()
+            quantity = len(same_bodies)
+            status.log_line(f"Detected {quantity} same bodies:")
+            for same_body in same_bodies:
+                (reference_body, reference_component) = same_body
+                status.log_line(f"* body '{reference_body.name}' in component '{reference_component.name2}'")
+                bodies_names_set.add(validate_and_parse_body_name(reference_body).main_name)
+                if not reference_component.referenced_configuration:
+                    body_folder = detect_folder_for_body_in_model(reference_component.get_model_doc2(), reference_body)
+                else:
+                    body_folder = detect_folder_for_body_in_component(reference_component, reference_body)
+                if body_folder:
+                    folders_names_set.add(body_folder)
+                valid_model_name = validate_and_parse_component_name(reference_component).valid_model_name
+                models_names_set.add(valid_model_name.model_name)
+                if valid_model_name.assembly_name:
+                    assembly_names_set.add(valid_model_name.assembly_name)
 
-        save_file_name = pathlib.Path(save_file_name_creator(assembly_names_set, models_names_set, folders_names_set, bodies_names_set, quantity))
+            save_file_name = pathlib.Path(save_file_name_creator(assembly_names_set, models_names_set, folders_names_set, bodies_names_set, quantity))
 
-        for (body, _, _, registered_save_file_name) in result:
-            if save_file_name == registered_save_file_name:
-                raise Exception(f"save-file '{save_file_name}' for rep-body '{reference_body.name}' is already reserved by body '{body.name}'")
-        result.append((reference_body, quantity, reference_component, save_file_name))
-        status.log_line(f"+ defined common save name is '{save_file_name}'")
-    return result
+            for (body, _, _, registered_save_file_name) in result:
+                if save_file_name == registered_save_file_name:
+                    raise Exception(f"save-file '{save_file_name}' for rep-body '{reference_body.name}' is already reserved by body '{body.name}'")
+            result.append((reference_body, quantity, reference_component, save_file_name))
+            status.log_line(f"+ defined common save name is '{save_file_name}'")
+        return result
+    except Exception as error:
+        raise Exception(f"cannot prepare saving group: {error}")

@@ -1,8 +1,10 @@
-from typing import List, Tuple, Set, TypeAlias
+import pathlib
+
+from typing import List, Tuple, TypeAlias
 from pyswx.api.sldworks.interfaces import IAssemblyDoc, IModelDoc2, IComponent2, IBody2
 from pyswx.api.swconst.enumerations import SWDocumentTypesE, SWBodyTypeE
 
-from . import i_body_utils
+from . import i_body_utils, open_document
 
 __all__ = [
     'UniqueBodiesManager',
@@ -18,6 +20,20 @@ class UniqueBodiesManager:
 
     def __init__(self):
         self.__unique_bodies: UniqueBodiesManager.UniqueBodies = []
+
+    def add_from_project(self, project_path: pathlib.Path):
+        """
+        Recursively add solid bodies from SW project.
+        """
+        project_extension = project_path.suffix
+        if project_path.suffix == '.SLDPRT':
+            project_root = open_document(project_path, SWDocumentTypesE.SW_DOC_PART)
+            self.add_from_model(project_root.root_model)
+        elif project_path.suffix == '.SLDASM':
+            project_root = open_document(project_path, SWDocumentTypesE.SW_DOC_ASSEMBLY)
+            self.add_from_assembly(project_root.root_assembly)
+        else:
+            raise Exception(f"unexpected type of project's extension '{project_extension}', it's available only *.SLDPRT or *.SLDASM")
 
     def add_from_assembly(self, assembly: IAssemblyDoc):
         """

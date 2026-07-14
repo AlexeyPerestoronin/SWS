@@ -34,7 +34,6 @@ def validate_and_parse_model_name(model: IModelDoc2) -> ValidModelName:
     """
     Validate and parse name of the SW-IModelDoc2.
     """
-
     model_name = model.get_path_name().stem
     model_name_pattern = r'(?P<model_name>[A-ZА-ЯЁ](\w|\d)*(-[A-ZА-ЯЁ](\w|\d)*)*)(\^(?P<assembly_name>[A-ZА-ЯЁ](\w|\d)*(-[A-ZА-ЯЁ](\w|\d)*)*))?'
     match = re.fullmatch(model_name_pattern, model_name)
@@ -51,10 +50,12 @@ def get_solid_body_folders_in_model(model: IModelDoc2, use_cache: bool = True) -
     if not hasattr(get_solid_body_folders_in_model, 'model_folders_cache'):
         setattr(get_solid_body_folders_in_model, 'model_folders_cache', {})
     model_folders_cache = getattr(get_solid_body_folders_in_model, 'model_folders_cache')
-    cache_key = model.get_path_name()
+    # ---
+    cache_key = f"{model.get_path_name()} {model.configuration_manager.active_configuration.name}"
     cached_folders = model_folders_cache.get(cache_key, None)
     if not cached_folders or use_cache == False:
         cached_folders = i_feature_utils.select_solid_body_folders_in_feature_list(model.first_feature)
+        model_folders_cache[cache_key] = cached_folders
     return cached_folders
 
 

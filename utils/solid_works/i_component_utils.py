@@ -63,10 +63,12 @@ def get_solid_body_folders_in_component(component: IComponent2, use_cache: bool 
     if not hasattr(get_solid_body_folders_in_component, 'component_folders_cache'):
         setattr(get_solid_body_folders_in_component, 'component_folders_cache', {})
     component_folders_cache = getattr(get_solid_body_folders_in_component, 'component_folders_cache')
-    cache_key = component.name2
+    # ---
+    cache_key = f"{component.name2} {component.referenced_configuration}"
     cached_folders = component_folders_cache.get(cache_key, None)
     if not cached_folders or use_cache == False:
         cached_folders = i_feature_utils.select_solid_body_folders_in_feature_list(component.first_feature)
+        component_folders_cache[cache_key] = cached_folders
     return cached_folders
 
 
@@ -109,7 +111,7 @@ def detect_root_body_in_component(component: IComponent2, body: IBody2) -> IBody
             if i_body_utils.is_two_body_equal(root_body, body):
                 return root_body
     except Exception as error:
-        raise Exception(f"cannot detect root-body in component-'{component.name2}' by reference-body-'{body.name}'")
+        raise Exception(f"cannot detect root-body in component-'{component.name2}' by reference-body-'{body.name}': {error}")
 
 
 def save_body_from_component_like_step(component: IComponent2, body: IBody2, step_save_path: pathlib.Path):
