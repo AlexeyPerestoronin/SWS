@@ -39,7 +39,12 @@ class CNCLaserCuttingDocCreator(IDocumentCreator):
         то соответствующие файлы STEP/DXF создаются в подпапках.
         """
 
-        TableData: TypeAlias = List[Tuple[str, bool, bool, int]]
+        TableData: TypeAlias = List[Tuple[
+            str,  # название детали
+            bool,  # экспорт в STEP
+            bool,  # экспорт в DXF
+            int  # количество экземпляров
+        ]]
 
         def __init__(self, saving_groups: utils.SavingGroups, save_folder: pathlib.Path, base_matcher: Callable[[str, str], bool]):
             self.__marked_saving_groups = [['', saving_group] for saving_group in saving_groups]
@@ -82,10 +87,17 @@ class CNCLaserCuttingDocCreator(IDocumentCreator):
             return table_data
 
         def unused(self, match_expressions: List[str]):
-            self.prepare(False, False, match_expressions)
+            unused_elements = self.prepare(False, False, match_expressions)
+            for unused_element in unused_elements:
+                component_name = unused_element[0]
+                utils.warning.log_line(f"detected DOC-unused element: '{component_name}'")
 
         def unclassified(self) -> TableData:
-            return self.prepare(False, False, unused_only=True)
+            unclassified_elements = self.prepare(False, False, unused_only=True)
+            for unused_element in unclassified_elements:
+                component_name = unused_element[0]
+                utils.error.log_line(f"detected DOC-unclassified element: '{component_name}'")
+            return unclassified_elements
 
     def __init__(self, project_name: str):
         self.__content = [

@@ -44,8 +44,8 @@
             "args": [
                 // "projects.work-shop.make-doc-for-workbench-1000-600"
                 // "projects.kinematic-workbench-v-iii.make-doc"
-                //"projects.gate-latch.make-doc"
-                "projects.z-lift-v-iii.create-metal-tech-task"
+                "projects.gate-latch.make-doc"
+                // "projects.z-lift-v-iii.create-metal-tech-task"
                 // "projects.mm-v-iv.make-doc"
                 // "projects.tests.test-1"
             ],
