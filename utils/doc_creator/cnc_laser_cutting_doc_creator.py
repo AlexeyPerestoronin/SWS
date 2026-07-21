@@ -38,59 +38,37 @@ class CNCLaserCuttingDocCreator(IDocumentCreator):
         ]]
 
         def __init__(self, saving_groups: utils.SavingGroups, save_folder: pathlib.Path, base_matcher: Callable[[str, str], bool]):
-            self.__marked_saving_groups = [['', saving_group] for saving_group in saving_groups]
+            self.__saving_groups = saving_groups
             self.__save_folder = save_folder
             self.__base_matcher = base_matcher
             # ---
             self.__save_folder.mkdir(parents=True, exist_ok=True)
 
         def prepare(self,
-                    step: bool,
-                    dxf: bool,
                     match_expressions: List[str] = [],
                     *,
-                    quantity_expression: Callable[[int], int] = lambda q: q,
-                    unused_only: bool = False) -> TableData:
-            unused_tag = 'unused'
+                    step: bool,
+                    dxf: bool,
+                    quantity_expression: Callable[[int], int] = lambda q: q) -> TableData:
             table_data = []
-            for marked_saving_group in self.__marked_saving_groups:
-                mark = marked_saving_group[0]
-                (reference_body, quantity, reference_component, save_file_name) = marked_saving_group[1]
-                component_full_name = str(save_file_name)
-                if unused_only:
-                    if mark == '':
-                        table_data.append([component_full_name, step, dxf, quantity_expression(quantity)])
-                    else:
-                        continue
+            for saving_group in self.__saving_groups:
+                component_full_name = str(saving_group.save_file_name)
                 for match_expression in match_expressions:
                     if self.__base_matcher(match_expression, component_full_name):
-                        if mark != '':
-                            raise Exception(f"'{component_full_name}' is already passed by '{mark}'-mark")
+                        if saving_group.mark is not None:
+                            raise Exception(f"'{component_full_name}' is already passed by '{saving_group.mark}'-mark")
+                        saving_group.mark = f"CNCLaserCuttingDocCreator by '{match_expression}'"
                         if step:
-                            step_file = self.__save_folder / 'STEP' / save_file_name.with_suffix('.step')
-                            utils.save_body_from_component_like_step(reference_component, reference_body, step_file)
+                            step_file = self.__save_folder / 'STEP' / saving_group.save_file_name.with_suffix('.step')
+                            utils.save_body_from_component_like_step(saving_group.component, saving_group.body, step_file)
                             utils.success.log_line(f"STEP file created: {step_file}")
                         if dxf:
-                            dxf_file = self.__save_folder / 'DXF' / save_file_name.with_suffix('.dxf')
-                            utils.save_body_from_component_like_dxf(reference_component, reference_body, dxf_file)
+                            dxf_file = self.__save_folder / 'DXF' / saving_group.save_file_name.with_suffix('.dxf')
+                            utils.save_body_from_component_like_dxf(saving_group.component, saving_group.body, dxf_file)
                             utils.success.log_line(f"DXF file created: {dxf_file}")
-                        marked_saving_group[0] = unused_tag if step is False and dxf is False else str(match_expression)
-                        table_data.append([component_full_name, step, dxf, quantity_expression(quantity)])
+                        table_data.append([component_full_name, step, dxf, quantity_expression(saving_group.quantity)])
                         break
             return table_data
-
-        def unused(self, match_expressions: List[str]):
-            unused_elements = self.prepare(False, False, match_expressions)
-            for unused_element in unused_elements:
-                component_name = unused_element[0]
-                utils.warning.log_line(f"detected DOC-unused element: '{component_name}'")
-
-        def unclassified(self) -> TableData:
-            unclassified_elements = self.prepare(False, False, unused_only=True)
-            for unused_element in unclassified_elements:
-                component_name = unused_element[0]
-                utils.error.log_line(f"detected DOC-unclassified element: '{component_name}'")
-            return unclassified_elements
 
     def __init__(self, project_name: str):
         self.__content = [
@@ -131,13 +109,11 @@ class CNCLaserCuttingDocCreator(IDocumentCreator):
     def add_4mm_steel_sheet_table(self, table_data: TableDataPreparator.TableData) -> 'CNCLaserCuttingDocCreator':
         return self.add_table('Лист стальной горячекатанный 4мм', table_data, 'https://купитьметалл.рф/product/list-gk-4-st3sp-ps-5')
 
-    def add_unclassified_table(self, table_data: TableDataPreparator.TableData) -> 'CNCLaserCuttingDocCreator':
-        return self.add_table('Не учтённые элементы', table_data)
-
     def create(self, save_folder: pathlib.Path):
         doc_file_path = save_folder / 'CNC_Laser_Metal_Cutting.md'
         try:
             with open(doc_file_path, "w", encoding="utf-8") as file:
                 file.write("\n".join(self.__content))
+            utils.success.log_line(f"CNC-Laser-Cutting documentation created: {doc_file_path}")
         except Exception as error:
             raise RuntimeError(f"cannot create DOC in {doc_file_path}: {error}")

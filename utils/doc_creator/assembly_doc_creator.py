@@ -25,7 +25,7 @@ class AssemblyDocCreator(IDocumentCreator):
         ]]
 
         def __init__(self, saving_groups: utils.SavingGroups, save_folder: pathlib.Path, base_matcher: Callable[[str, str], bool]):
-            self.__marked_saving_groups = [['', saving_group] for saving_group in saving_groups]
+            self.__saving_groups = saving_groups
             self.__save_folder = save_folder
             self.__base_matcher = base_matcher
             # ---
@@ -33,18 +33,17 @@ class AssemblyDocCreator(IDocumentCreator):
 
         def prepare(self, match_expressions: List[str] = [], *, quantity_expression: Callable[[int], int] = lambda q: q) -> TableData:
             table_data = []
-            for marked_saving_group in self.__marked_saving_groups:
-                mark = marked_saving_group[0]
-                (reference_body, quantity, reference_component, save_file_name) = marked_saving_group[1]
-                component_full_name = str(save_file_name)
+            for saving_group in self.__saving_groups:
+                component_full_name = str(saving_group.save_file_name)
                 for match_expression in match_expressions:
                     if self.__base_matcher(match_expression, component_full_name):
-                        if mark != '':
-                            raise Exception(f"'{component_full_name}' is already passed by '{mark}'-mark")
-                        step_file = self.__save_folder / 'STEP' / save_file_name.with_suffix('.step')
-                        utils.save_body_from_component_like_step(reference_component, reference_body, step_file)
+                        if saving_group.mark is not None:
+                            raise Exception(f"'{component_full_name}' is already passed by '{saving_group.mark}'-mark")
+                        saving_group.mark = f"AssemblyDocCreator by '{match_expression}'"
+                        step_file = self.__save_folder / 'STEP' / saving_group.save_file_name.with_suffix('.step')
+                        utils.save_body_from_component_like_step(saving_group.component, saving_group.body, step_file)
                         utils.success.log_line(f"STEP file created: {step_file}")
-                        table_data.append([component_full_name, quantity_expression(quantity)])
+                        table_data.append([component_full_name, quantity_expression(saving_group.quantity)])
                         break
             return table_data
 
@@ -76,5 +75,6 @@ class AssemblyDocCreator(IDocumentCreator):
         try:
             with open(doc_file_path, "w", encoding="utf-8") as file:
                 file.write("\n".join(self.__content))
+            utils.success.log_line(f"Assembly documentation created: {doc_file_path}")
         except Exception as error:
             raise RuntimeError(f"cannot create DOC in {doc_file_path}: {error}")
