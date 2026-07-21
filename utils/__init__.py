@@ -172,3 +172,16 @@ def prepare_saving_groups_2(unique_bodies: UniqueBodiesManager.UniqueBodies, sav
         return result
     except Exception as error:
         raise Exception(f"cannot prepare saving group: {error}")
+
+
+def sw_task(doc_string: str = None, *args, **kwargs):
+    """Декоратор для расширения стандартного функционала декоратора @invoke.task"""
+    import invoke
+
+    def decorator(func):
+        # 1. Если передана строка документации, принудительно устанавливаем её
+        if doc_string is not None:
+            func.__doc__ = doc_string
+        return invoke.task(*args, **kwargs)(func)
+
+    return decorator

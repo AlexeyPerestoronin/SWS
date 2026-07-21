@@ -92,7 +92,6 @@ class ISOModelValidator(ModelNameValidator):
         return None
 
 
-
 def validate_and_parse_model_name(model: IModelDoc2, *, validators: List[ModelNameValidator] = [OwnModelValidator(), ISOModelValidator()]) -> ValidModelName:
     """Validate and parse name of the SW-IModelDoc2."""
 
