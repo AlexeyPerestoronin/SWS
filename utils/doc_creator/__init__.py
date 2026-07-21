@@ -60,12 +60,14 @@ class CNCLaserCuttingDocCreator(IDocumentCreator):
                     *,
                     quantity_expression: Callable[[int], int] = lambda q: q,
                     unused_only: bool = False) -> TableData:
+            unused_tag = 'unused'
             table_data = []
-            for (mark, saving_group) in self.__marked_saving_groups:
-                (reference_body, quantity, reference_component, save_file_name) = saving_group
+            for marked_saving_group in self.__marked_saving_groups:
+                mark = marked_saving_group[0]
+                (reference_body, quantity, reference_component, save_file_name) = marked_saving_group[1]
                 component_full_name = str(save_file_name)
                 if unused_only:
-                    if mark != '':
+                    if mark == '':
                         table_data.append([component_full_name, step, dxf, quantity_expression(quantity)])
                     else:
                         continue
@@ -81,7 +83,7 @@ class CNCLaserCuttingDocCreator(IDocumentCreator):
                             dxf_file = self.__save_folder / 'DXF' / save_file_name.with_suffix('.dxf')
                             utils.save_body_from_component_like_dxf(reference_component, reference_body, dxf_file)
                             utils.success.log_line(f"DXF file created: {dxf_file}")
-                        mark = 'unused' if step is False and dxf is False else str(match_expression)
+                        marked_saving_group[0] = unused_tag if step is False and dxf is False else str(match_expression)
                         table_data.append([component_full_name, step, dxf, quantity_expression(quantity)])
                         break
             return table_data
@@ -128,6 +130,18 @@ class CNCLaserCuttingDocCreator(IDocumentCreator):
         except Exception as error:
             raise RuntimeError(f"cannot add '{table_header}'-table in DOC: {error}")
         return self
+
+    def add_8mm_steel_sheet_table(self, table_data: TableDataPreparator.TableData) -> 'CNCLaserCuttingDocCreator':
+        return self.add_table('Лист стальной горячекатанный 8мм', table_data, 'https://купитьметалл.рф/product/list-gk-8-st3sp-ps-5')
+
+    def add_6mm_steel_sheet_table(self, table_data: TableDataPreparator.TableData) -> 'CNCLaserCuttingDocCreator':
+        return self.add_table('Лист стальной горячекатанный 6мм', table_data, 'https://купитьметалл.рф/product/list-gk-6-st3sp-ps-5')
+
+    def add_4mm_steel_sheet_table(self, table_data: TableDataPreparator.TableData) -> 'CNCLaserCuttingDocCreator':
+        return self.add_table('Лист стальной горячекатанный 4мм', table_data, 'https://купитьметалл.рф/product/list-gk-4-st3sp-ps-5')
+
+    def add_unclassified_table(self, table_data: TableDataPreparator.TableData) -> 'CNCLaserCuttingDocCreator':
+        return self.add_table('Не учтённые элементы', table_data)
 
     def create(self, save_folder: pathlib.Path):
         doc_file_path = save_folder / 'CNC_Laser_Metal_Cutting.md'
