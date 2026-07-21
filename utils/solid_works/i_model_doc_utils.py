@@ -1,5 +1,5 @@
 import re
-from typing import TypeAlias, List, Optional
+from typing import TypeAlias, List, Optional, Protocol
 from pyswx.api.sldworks.interfaces import IModelDoc2, IBody2, IBodyFolder
 from pyswx.api.swconst.enumerations import SWBodyFolderFeatureTypE
 
@@ -7,6 +7,9 @@ from . import i_feature_utils
 
 __all__ = [
     'ValidModelName',
+    'ModelNameValidator',
+    'OwnModelValidator',
+    'ISOModelValidator',
     'validate_and_parse_model_name',
     'get_solid_body_folders_in_model',
     'detect_folder_for_body_in_model',
@@ -16,10 +19,12 @@ __all__ = [
 class ValidModelName:
     ModelName: TypeAlias = str
     AssemblyNameOpt: TypeAlias = Optional[str]
+    ConfigurationName: TypeAlias = str
 
-    def __init__(self, model_name: ModelName, assembly_name: AssemblyNameOpt):
+    def __init__(self, model_name: ModelName, assembly_name: AssemblyNameOpt, configuration_name: ConfigurationName):
         self.__model_name = model_name
         self.__assembly_name = assembly_name
+        self.__configuration_name = configuration_name
 
     @property
     def model_name(self) -> ModelName:
@@ -29,18 +34,73 @@ class ValidModelName:
     def assembly_name(self) -> AssemblyNameOpt:
         return self.__assembly_name
 
+    @property
+    def configuration_name(self) -> ConfigurationName:
+        return self.__configuration_name
 
-def validate_and_parse_model_name(model: IModelDoc2) -> ValidModelName:
-    """
-    Validate and parse name of the SW-IModelDoc2.
-    """
-    model_name = model.get_path_name().stem
-    model_name_pattern = r'(?P<model_name>[A-ZА-ЯЁ](\w|\d)*(-[A-ZА-ЯЁ](\w|\d)*)*)(\^(?P<assembly_name>[A-ZА-ЯЁ](\w|\d)*(-[A-ZА-ЯЁ](\w|\d)*)*))?'
-    match = re.fullmatch(model_name_pattern, model_name)
-    if match:
-        groups = match.groupdict()
-        return ValidModelName(groups['model_name'], groups.get('assembly_name', None))
-    raise Exception(f"model name '{model_name}' does not match by regular expression: {model_name_pattern}")
+
+class ModelNameValidator(Protocol):
+    """TODO: need to provide some comment"""
+
+    @property
+    def name(self) -> str:
+        ...
+
+    def __call__(self, model: IModelDoc2) -> Optional[ValidModelName]:
+        ...
+
+
+class OwnModelValidator(ModelNameValidator):
+    """TODO: need to provide some comment"""
+
+    @property
+    def name(self) -> str:
+        return 'OwnModelValidator'
+
+    def __call__(self, model: IModelDoc2) -> Optional[ValidModelName]:
+        model_name = model.get_path_name().stem
+        if re.match(r'(iso|ISO)', model_name):
+            raise Exception(f"your own designed model has 'ISO'-abbreviation in its name '{model_name}'")
+        model_name_pattern = r'(?P<model_name>[A-ZА-ЯЁ](\w|\d)*(-[A-ZА-ЯЁ](\w|\d)*)*)(\^(?P<assembly_name>[A-ZА-ЯЁ](\w|\d)*(-[A-ZА-ЯЁ](\w|\d)*)*))?'
+        match = re.fullmatch(model_name_pattern, model_name)
+        if match:
+            groups = match.groupdict()
+            model_name = groups['model_name']
+            assembly_name = groups.get('assembly_name', None)
+            configuration_name = model.configuration_manager.active_configuration.name
+            return ValidModelName(model_name, assembly_name, configuration_name)
+        return None
+
+
+class ISOModelValidator(ModelNameValidator):
+    """TODO: need to provide some comment"""
+
+    @property
+    def name(self) -> str:
+        return 'ISOModelValidator'
+
+    def __call__(self, model: IModelDoc2) -> Optional[ValidModelName]:
+        model_name = model.get_path_name().stem
+        model_name_pattern = r'(?P<model_name>.+?_iso)'
+        match = re.fullmatch(model_name_pattern, model_name)
+        if match:
+            groups = match.groupdict()
+            model_name = groups['model_name']
+            assembly_name = None
+            configuration_name = model.configuration_manager.active_configuration.name
+            return ValidModelName(model_name, assembly_name, configuration_name)
+        return None
+
+
+
+def validate_and_parse_model_name(model: IModelDoc2, *, validators: List[ModelNameValidator] = [OwnModelValidator(), ISOModelValidator()]) -> ValidModelName:
+    """Validate and parse name of the SW-IModelDoc2."""
+
+    for validator in validators:
+        valid_model_name_opt = validator(model)
+        if valid_model_name_opt:
+            return valid_model_name_opt
+    raise Exception(f"model name '{model.get_path_name().stem}' does not validate any of validators: {[validator.name for validator in validators]}")
 
 
 def get_solid_body_folders_in_model(model: IModelDoc2, use_cache: bool = True) -> List[IBodyFolder]:
