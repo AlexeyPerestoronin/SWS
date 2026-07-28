@@ -19,7 +19,6 @@ __all__ = [
 
 
 class ValidComponentName:
-    AssemblyName: TypeAlias = str
     AssemblyNumbers: TypeAlias = List[int]
 
     def __init__(self, valid_model_name: ValidModelName, assembly_number: AssemblyNumbers):
