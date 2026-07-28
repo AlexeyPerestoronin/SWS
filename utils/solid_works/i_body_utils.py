@@ -51,6 +51,9 @@ class ValidBodyName:
         self.__main_name = main_name
         self.__suffixes = suffixes
 
+    def __str__(self) -> str:
+        return f"{self.main_name} {self.suffixes}"
+
     @property
     def main_name(self) -> MainName:
         return self.__main_name

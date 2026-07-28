@@ -24,6 +24,9 @@ class ValidComponentName:
     def __init__(self, valid_model_name: ValidModelName, assembly_number: AssemblyNumbers):
         self.__valid_model_name = valid_model_name
         self.__assembly_number = assembly_number
+    
+    def __str__(self) -> str:
+        return f"{self.valid_model_name} {self.assembly_number}"
 
     @property
     def valid_model_name(self) -> ValidModelName:
@@ -71,7 +74,7 @@ def get_solid_body_folders_in_component(component: IComponent2, use_cache: bool 
     return cached_folders
 
 
-def detect_folder_for_body_in_component(component: IComponent2, body: IBody2, use_cache: bool = True) -> Optional[str]:
+def detect_folder_for_body_in_component(component: IComponent2, body: IBody2, use_cache: bool = True) -> Optional[IBodyFolder]:
     """
     Detect the containing body folder for a given body in the component.
     """
@@ -80,13 +83,12 @@ def detect_folder_for_body_in_component(component: IComponent2, body: IBody2, us
         for body_in_folder in folder.get_bodies():
             if body_in_folder.name == body.name:
                 folder_type = folder.type
-                folder_name = folder.get_feature().name
                 if folder_type == SWBodyFolderFeatureTypE.SW_SOLID_BODY_FOLDER:
                     return None
                 elif folder_type == SWBodyFolderFeatureTypE.SW_BODY_SUB_FOLDER:
-                    return folder_name
+                    return folder
                 else:
-                    raise Exception(f"body '{body.name}' is found in unexpected folder: folder's type is {folder_type}, name is '{folder_name}'")
+                    raise Exception(f"body '{body.name}' is found in unexpected folder: folder's type is {folder_type}, name is '{folder.name}'")
     raise Exception(
         f"cannot detect folder for the body '{body.name}' in the component '{component.name2}': list of component's folders is {[folder.get_feature().name for folder in folders]}")
 

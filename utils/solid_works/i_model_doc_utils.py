@@ -27,13 +27,15 @@ class ModelNameValidationApproach(str, Enum):
 class ValidModelName:
     ModelName: TypeAlias = str
     AssemblyNameOpt: TypeAlias = Optional[str]
-    ConfigurationName: TypeAlias = str
 
-    def __init__(self, model_name: ModelName, assembly_name: AssemblyNameOpt, configuration_name: ConfigurationName, approach: ModelNameValidationApproach):
+    def __init__(self, model_name: ModelName, assembly_name: AssemblyNameOpt, configuration_name: str, approach: ModelNameValidationApproach):
         self.__model_name = model_name
         self.__assembly_name = assembly_name
         self.__configuration_name = configuration_name
         self.__approach = approach
+
+    def __str__(self) -> str:
+        return f"{self.model_name} ({self.configuration_name})"
 
     @property
     def model_name(self) -> ModelName:
@@ -44,9 +46,9 @@ class ValidModelName:
         return self.__assembly_name
 
     @property
-    def configuration_name(self) -> ConfigurationName:
+    def configuration_name(self) -> str:
         return self.__configuration_name
-    
+
     @property
     def approach(self) -> ModelNameValidationApproach:
         return self.__approach
@@ -131,7 +133,7 @@ def get_solid_body_folders_in_model(model: IModelDoc2, use_cache: bool = True) -
     return cached_folders
 
 
-def detect_folder_for_body_in_model(model: IModelDoc2, body: IBody2, use_cache: bool = True) -> str:
+def detect_folder_for_body_in_model(model: IModelDoc2, body: IBody2, use_cache: bool = True) -> Optional[IBodyFolder]:
     """
     Detect the containing body folder for a given body in the model.
     """
@@ -140,11 +142,10 @@ def detect_folder_for_body_in_model(model: IModelDoc2, body: IBody2, use_cache: 
         for body_in_folder in folder.get_bodies():
             if body_in_folder.name == body.name:
                 folder_type = folder.type
-                folder_name = folder.get_feature().name
                 if folder_type == SWBodyFolderFeatureTypE.SW_SOLID_BODY_FOLDER:
                     return None
                 elif folder_type == SWBodyFolderFeatureTypE.SW_BODY_SUB_FOLDER:
-                    return folder_name
+                    return folder
                 else:
-                    raise Exception(f"body '{body.name}' is found in unexpected folder: folder's type is {folder_type}, name is '{folder_name}'")
+                    raise Exception(f"body '{body.name}' is found in unexpected folder: folder's type is {folder_type}, name is '{folder.name}'")
     raise Exception(f"cannot detect folder for the body '{body.name}': list of model's folders is {[folder.get_feature().name for folder in folders]}")
