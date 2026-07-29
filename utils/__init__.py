@@ -61,7 +61,6 @@ def sw_task(doc_string: str = None, *args, **kwargs):
                 logger.status_info.log_line(doc_string)
             return func(*func_args, **func_kwargs)
 
-        # 3. Регистрируем в invoke именно нашу обертку (которая маскируется под func)
         return invoke.task(*args, **kwargs)(wrapper)
 
     return decorator
