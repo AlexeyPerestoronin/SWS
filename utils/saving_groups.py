@@ -194,7 +194,7 @@ def prepare_saving_groups(unique_bodies: UniqueBodiesManager.UniqueBodies, save_
             unique_body_valid_metadata = UniqueBodyValidMetadata(quantity)
             for same_body in same_bodies:
                 (reference_body, reference_component) = same_body
-                status.log_line(f"* body '{reference_body.name}' in component '{reference_component.name2} ({reference_component.referenced_configuration})'")
+                info.log_line(f"* body '{reference_body.name}' in component '{reference_component.name2} ({reference_component.referenced_configuration})'")
 
                 if not reference_component.referenced_configuration:
                     valid_body_folder = detect_folder_for_body_in_model(reference_component.get_model_doc2(), reference_body)

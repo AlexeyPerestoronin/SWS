@@ -44,7 +44,8 @@ class Logger:
 
 
 success = Logger(Color.GREEN)
-status = Logger(Color.CYAN)
-info = Logger(Color.BLUE)
+status = Logger(Color.BLUE)
+info = Logger(Color.WHITE)
+status_info = Logger(Color.MAGENTA)
 warning = Logger(Color.YELLOW)
 error = Logger(Color.RED)
