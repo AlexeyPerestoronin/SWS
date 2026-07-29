@@ -23,6 +23,7 @@ class QuantityEvaluator(Callable[[int], int]):
     def __call__(self, quantity: int) -> int:
         return quantity
 
+
 class AssemblyTableDataPreparator(Protocol):
     """TODO: need to provide some comment"""
 
@@ -38,6 +39,7 @@ class AssemblyTableDataPreparator(Protocol):
     def prepare_data(self):
         ...
 
+
 class SpecialElementsAssemblyTable(AssemblyTableDataPreparator):
     """TODO: need to provide some comment"""
 
@@ -52,7 +54,13 @@ class SpecialElementsAssemblyTable(AssemblyTableDataPreparator):
         self.__table_data = sorted(self.__table_data, key=lambda x: x[0])
         return self.__table_data
 
-    def prepare_data(self, match_expressions: List[str], *, quantity_evaluator: QuantityEvaluator = QuantityEvaluator(), step: bool = False, save_folder_opt: Optional[pathlib.Path] = None, buy_link: Optional[str] = None) -> 'SpecialElementsAssemblyTable':
+    def prepare_data(self,
+                     match_expressions: List[str],
+                     *,
+                     quantity_evaluator: QuantityEvaluator = QuantityEvaluator(),
+                     step: bool = False,
+                     save_folder_opt: Optional[pathlib.Path] = None,
+                     buy_link: Optional[str] = None) -> 'SpecialElementsAssemblyTable':
         for saving_group in self._saving_groups:
             component_full_name = str(saving_group.save_file_name)
             for match_expression in match_expressions:
@@ -70,9 +78,10 @@ class SpecialElementsAssemblyTable(AssemblyTableDataPreparator):
                     break
         return self
 
+
 class ISOToolboxAssemblyTable(AssemblyTableDataPreparator):
     """TODO: need to provide some comment"""
-    
+
     def __init__(self, saving_groups):
         super().__init__(saving_groups)
         self.__table_data: List[Tuple[str, str, str, str]] = []

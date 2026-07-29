@@ -1,5 +1,5 @@
 def detect_iso_element(name):
-    iso_element = iso_elements_data_table.get(name, None)
+    iso_element = ISO_ELEMENTS.get(name, None)
     if not iso_element:
         raise Exception(f"cannot detect ISO element '{name}'")
     return iso_element
@@ -16,7 +16,7 @@ def detect_link(name: str, type: str) -> str:
     return detect_iso_element(name)['type_to_links'].get(type, 'отсутствует')
 
 
-iso_elements_data_table = {
+ISO_ELEMENTS = {
     'countersunk flat head cross recess': {
         'translation': 'винт с потайной головкой и крестообразным шлицем',
         'type_to_links': {

@@ -25,7 +25,7 @@ class ValidComponentName:
         self.__valid_model_name = valid_model_name
         self.__configuration_name = configuration_name
         self.__assembly_number = assembly_number
-    
+
     def __str__(self) -> str:
         return f"{self.valid_model_name} {self.assembly_number}"
 

@@ -44,12 +44,7 @@ class CNCLaserCuttingDocCreator(IDocumentCreator):
             # ---
             self.__save_folder.mkdir(parents=True, exist_ok=True)
 
-        def prepare(self,
-                    match_expressions: List[str] = [],
-                    *,
-                    step: bool,
-                    dxf: bool,
-                    quantity_expression: Callable[[int], int] = lambda q: q) -> TableData:
+        def prepare(self, match_expressions: List[str] = [], *, step: bool, dxf: bool, quantity_expression: Callable[[int], int] = lambda q: q) -> TableData:
             table_data = []
             for saving_group in self.__saving_groups:
                 component_full_name = str(saving_group.save_file_name)

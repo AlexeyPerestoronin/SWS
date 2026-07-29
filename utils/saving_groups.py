@@ -17,9 +17,10 @@ __all__ = [
     'prepare_saving_groups',
 ]
 
+
 class ValidMetadata:
     """TODO: need to provide some comment"""
-    
+
     def __init__(self, valid_body_name: ValidBodyName, valid_component_name: ValidComponentName, valid_folder_name_opt: Optional[ValidFolderName]):
         self.__valid_body_name = valid_body_name
         self.__valid_component_name = valid_component_name
@@ -27,24 +28,26 @@ class ValidMetadata:
 
     def __str__(self) -> str:
         return f"ValidMetadata[ValidBodyName: '{self.valid_body_name}', ValidComponentName: '{self.valid_component_name}', ValidFolderName: '{self.valid_folder_name}']"
-    
+
     @property
     def valid_body_name(self) -> ValidBodyName:
         return self.__valid_body_name
-    
+
     @property
     def valid_component_name(self) -> ValidComponentName:
         return self.__valid_component_name
-    
+
     @property
     def valid_folder_name(self) -> Optional[ValidFolderName]:
         return self.__valid_folder_name_opt
+
 
 class ValidMetadataCollection(List[ValidMetadata]):
     """TODO: need to provide some comment"""
 
     def __str__(self) -> str:
-        return "ValidMetadataCollection[{valid_collection}]".format(valid_collection = ','.join(str(valid_metadata) for valid_metadata in self))
+        return "ValidMetadataCollection[{valid_collection}]".format(valid_collection=','.join(str(valid_metadata) for valid_metadata in self))
+
 
 class UniqueBodyValidMetadata:
     """TODO: need to provide some comment"""
@@ -52,20 +55,21 @@ class UniqueBodyValidMetadata:
     def __init__(self, quantity: int):
         self.__quantity: int = quantity
         self.__valid_metadata = ValidMetadataCollection()
-        
+
     def __str__(self) -> str:
         return f"UniqueBodyValidMetadata[quantity = {self.quantity}, {self.__valid_metadata}]"
 
     @property
     def quantity(self) -> int:
         return self.__quantity
-    
+
     @property
     def collection(self) -> ValidMetadataCollection:
         return self.__valid_metadata
 
     def add(self, valid_metadata: ValidMetadata):
         self.__valid_metadata.append(valid_metadata)
+
 
 class SaveFileNameCreator(Protocol):
     """Callable that builds an export file name from component/body sets."""
@@ -136,6 +140,7 @@ class StandardSaveFileNameCreator(SaveFileNameCreator):
 
 class SavingGroup:
     """TODO: need to provide some comment"""
+
     def __init__(self, *, body: IBody2, component: IComponent2, save_file_name: pathlib.Path, unique_body_valid_metadata: UniqueBodyValidMetadata):
         self.__body = body
         self.__component = component
@@ -196,17 +201,18 @@ def prepare_saving_groups(unique_bodies: UniqueBodiesManager.UniqueBodies, save_
                 else:
                     valid_body_folder = detect_folder_for_body_in_component(reference_component, reference_body)
 
-                unique_body_valid_metadata.add(ValidMetadata(
-                    validate_and_parse_body_name(reference_body),
-                    validate_and_parse_component_name(reference_component),
-                    validate_and_parse_folder_name(valid_body_folder) if valid_body_folder else None
-                ))
+                unique_body_valid_metadata.add(
+                    ValidMetadata(validate_and_parse_body_name(reference_body), validate_and_parse_component_name(reference_component),
+                                  validate_and_parse_folder_name(valid_body_folder) if valid_body_folder else None))
 
             save_file_name = save_file_name_creator(unique_body_valid_metadata)
             for result_saving_group in result_saving_groups:
                 if save_file_name == result_saving_group.save_file_name:
-                    raise Exception(f"save-file '{save_file_name}' for rep-body '{unique_body_valid_metadata}' is already reserved by unique bodies: '{str(result_saving_group.valid_metadata)}'")
-            result_saving_groups.append(SavingGroup(body=reference_body, component=reference_component, save_file_name=save_file_name, unique_body_valid_metadata=unique_body_valid_metadata))
+                    raise Exception(
+                        f"save-file '{save_file_name}' for rep-body '{unique_body_valid_metadata}' is already reserved by unique bodies: '{str(result_saving_group.valid_metadata)}'"
+                    )
+            result_saving_groups.append(
+                SavingGroup(body=reference_body, component=reference_component, save_file_name=save_file_name, unique_body_valid_metadata=unique_body_valid_metadata))
             status.log_line(f"+ defined common save name is '{save_file_name}'")
         return result_saving_groups
     except Exception as error:
