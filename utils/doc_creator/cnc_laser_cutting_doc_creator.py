@@ -66,7 +66,7 @@ class CNCLaserCuttingDocCreator(IDocumentCreator):
                             dxf_file = self.__save_folder / 'DXF' / saving_group.save_file_name.with_suffix('.dxf')
                             utils.save_body_from_component_like_dxf(saving_group.component, saving_group.body, dxf_file)
                             utils.success.log_line(f"DXF file created: {dxf_file}")
-                        table_data.append([component_full_name, step, dxf, quantity_expression(saving_group.quantity)])
+                        table_data.append([component_full_name, step, dxf, quantity_expression(saving_group.valid_metadata.quantity)])
                         break
             return table_data
 

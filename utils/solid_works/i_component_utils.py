@@ -21,8 +21,9 @@ __all__ = [
 class ValidComponentName:
     AssemblyNumbers: TypeAlias = List[int]
 
-    def __init__(self, valid_model_name: ValidModelName, assembly_number: AssemblyNumbers):
+    def __init__(self, valid_model_name: ValidModelName, configuration_name: str, assembly_number: AssemblyNumbers):
         self.__valid_model_name = valid_model_name
+        self.__configuration_name = configuration_name
         self.__assembly_number = assembly_number
     
     def __str__(self) -> str:
@@ -31,6 +32,10 @@ class ValidComponentName:
     @property
     def valid_model_name(self) -> ValidModelName:
         return self.__valid_model_name
+
+    @property
+    def configuration_name(self) -> str:
+        return self.__configuration_name
 
     @property
     def assembly_number(self) -> AssemblyNumbers:
@@ -53,7 +58,7 @@ def validate_and_parse_component_name(component: IComponent2) -> ValidComponentN
             assembly_numbers = [int(string_number) for string_number in re.findall(r'\d+', assembly_number_extraction)]
         except:
             raise Exception(f"impossible extract assembly number from component '{component_name}'")
-        return ValidComponentName(valid_model_name, assembly_numbers)
+        return ValidComponentName(valid_model_name, component.referenced_configuration, assembly_numbers)
     except Exception as error:
         raise Exception(f"component name '{component_name}' has unsatisfied condition -> {error}")
 
