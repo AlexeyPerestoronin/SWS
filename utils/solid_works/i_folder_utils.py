@@ -39,7 +39,7 @@ class ValidFolderName:
 
 
 class FolderNameValidator(Protocol):
-    """TODO: need to provide some comment"""
+    """Protocol for validating and parsing a SolidWorks body folder name."""
 
     @property
     def name(self) -> str:
@@ -50,7 +50,7 @@ class FolderNameValidator(Protocol):
 
 
 class DefaultFolderNameValidator(FolderNameValidator):
-    """TODO: need to provide some comment"""
+    """Default validator that checks folder names against a basic pattern."""
 
     @property
     def name(self) -> str:
@@ -68,7 +68,7 @@ class DefaultFolderNameValidator(FolderNameValidator):
 
 
 def validate_and_parse_folder_name(folder: IBodyFolder, *, validators: List[FolderNameValidator] = [DefaultFolderNameValidator()]) -> ValidFolderName:
-    """TODO: need to provide some comment"""
+    """Validate and parse a folder name using the provided validators."""
 
     for validator in validators:
         valid_folder_name_opt = validator(folder)

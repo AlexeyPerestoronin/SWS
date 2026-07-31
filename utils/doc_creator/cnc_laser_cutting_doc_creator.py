@@ -15,7 +15,7 @@ __all__ = [
 
 
 class LaserCuttingManufacturingElementsTable(TableDataPreparator):
-    """TODO: need to provide some comment"""
+    """Table of laser-cut metal parts with STEP/DXF file references and quantities."""
 
     def __init__(self, saving_groups: utils.SavingGroups):
         super().__init__(saving_groups)

@@ -19,7 +19,7 @@ __all__ = [
 
 
 class ValidMetadata:
-    """TODO: need to provide some comment"""
+    """Metadata container for validated names of a body, its component, and its folder."""
 
     def __init__(self, valid_body_name: ValidBodyName, valid_component_name: ValidComponentName, valid_folder_name_opt: Optional[ValidFolderName]):
         self.__valid_body_name = valid_body_name
@@ -43,14 +43,14 @@ class ValidMetadata:
 
 
 class ValidMetadataCollection(List[ValidMetadata]):
-    """TODO: need to provide some comment"""
+    """Collection of ValidMetadata entries for a set of identical bodies."""
 
     def __str__(self) -> str:
         return "ValidMetadataCollection[{valid_collection}]".format(valid_collection=','.join(str(valid_metadata) for valid_metadata in self))
 
 
 class UniqueBodyValidMetadata:
-    """TODO: need to provide some comment"""
+    """Metadata for a group of identical bodies across components, tracking quantity and validation info."""
 
     def __init__(self, quantity: int):
         self.__quantity: int = quantity
@@ -139,7 +139,7 @@ class StandardSaveFileNameCreator(SaveFileNameCreator):
 
 
 class SavingGroup:
-    """TODO: need to provide some comment"""
+    """A group binding a body, its component, a save file name, and its validated metadata."""
 
     def __init__(self, *, body: IBody2, component: IComponent2, save_file_name: pathlib.Path, unique_body_valid_metadata: UniqueBodyValidMetadata):
         self.__body = body
@@ -178,7 +178,7 @@ class SavingGroup:
 
 
 class SavingGroups(List[SavingGroup]):
-    """TODO: need to provide some comment"""
+    """List of SavingGroup entries for all unique body groups to be exported."""
 
 
 def prepare_saving_groups(unique_bodies: UniqueBodiesManager.UniqueBodies, save_file_name_creator: SaveFileNameCreator = StandardSaveFileNameCreator()) -> List[SavingGroup]:

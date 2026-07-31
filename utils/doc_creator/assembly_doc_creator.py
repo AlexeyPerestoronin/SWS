@@ -17,7 +17,7 @@ __all__ = [
 
 
 class SpecialElementsAssemblyTable(TableDataPreparator):
-    """TODO: need to provide some comment"""
+    """Таблица покупных / специальных элементов сборки с STEP-файлами и ссылками для заказа."""
 
     def __init__(self, saving_groups: utils.SavingGroups):
         super().__init__(saving_groups)
@@ -62,7 +62,7 @@ class SpecialElementsAssemblyTable(TableDataPreparator):
 
 
 class ISOToolboxAssemblyTable(TableDataPreparator):
-    """TODO: need to provide some comment"""
+    """Table of ISO toolbox components with translations, type, quantity, and purchase links."""
 
     def __init__(self, saving_groups):
         super().__init__(saving_groups)
@@ -92,7 +92,7 @@ class ISOToolboxAssemblyTable(TableDataPreparator):
 
 
 class AssemblyDocCreator(IDocumentCreator):
-    """TODO: need to provide some comment"""
+    """Generator of Markdown assembly documentation with component tables."""
 
     def __init__(self, project_name: str):
         self.__content = [

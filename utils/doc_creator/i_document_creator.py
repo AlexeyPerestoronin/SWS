@@ -13,28 +13,28 @@ __all__ = [
 
 
 class QuantityEvaluator(Callable[[int], int]):
-    """TODO: need to provide some comment"""
+    """Callable that evaluates the quantity of items for a table row."""
 
     def __call__(self, quantity: int) -> int:
         return quantity
 
 
 class TableDataPreparator(Protocol):
-    """TODO: need to provide some comment"""
+    """Protocol for preparing table data from saving groups."""
 
     def __init__(self, saving_groups: utils.SavingGroups):
         self._saving_groups = saving_groups
 
     def get_headers(self) -> List[str]:
-        """TODO: need to provide some comment"""
+        """Return list of column headers for the table."""
         ...
 
     def get_data(self) -> list:
-        """TODO: need to provide some comment"""
+        """Return list of rows (data) for the table."""
         ...
 
     def prepare_data(self):
-        """TODO: need to provide some comment"""
+        """Process saving groups and populate the table data."""
         ...
 
 
