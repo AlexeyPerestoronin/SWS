@@ -2,10 +2,9 @@ import re
 import pathlib
 
 from tabulate import tabulate
-from collections.abc import Callable
-from typing import List, Tuple, Optional, Protocol
+from typing import List, Tuple, Optional
 
-from .i_document_creator import IDocumentCreator
+from .i_document_creator import QuantityEvaluator, TableDataPreparator, IDocumentCreator
 from .iso_elements import detect_translation, detect_link
 
 import utils
@@ -17,30 +16,7 @@ __all__ = [
 ]
 
 
-class QuantityEvaluator(Callable[[int], int]):
-    """TODO: need to provide some comment"""
-
-    def __call__(self, quantity: int) -> int:
-        return quantity
-
-
-class AssemblyTableDataPreparator(Protocol):
-    """TODO: need to provide some comment"""
-
-    def __init__(self, saving_groups: utils.SavingGroups):
-        self._saving_groups = saving_groups
-
-    def get_headers(self) -> List[str]:
-        ...
-
-    def get_data(self) -> list:
-        ...
-
-    def prepare_data(self):
-        ...
-
-
-class SpecialElementsAssemblyTable(AssemblyTableDataPreparator):
+class SpecialElementsAssemblyTable(TableDataPreparator):
     """TODO: need to provide some comment"""
 
     def __init__(self, saving_groups: utils.SavingGroups):
@@ -60,7 +36,8 @@ class SpecialElementsAssemblyTable(AssemblyTableDataPreparator):
                      quantity_evaluator: QuantityEvaluator = QuantityEvaluator(),
                      step: bool = False,
                      save_folder_opt: Optional[pathlib.Path] = None,
-                     buy_link: Optional[str] = None) -> 'SpecialElementsAssemblyTable':
+                     special_name_opt: Optional[str] = None,
+                     buy_link_opt: Optional[str] = None) -> 'SpecialElementsAssemblyTable':
         for saving_group in self._saving_groups:
             component_full_name = str(saving_group.save_file_name)
             for match_expression in match_expressions:
@@ -74,12 +51,17 @@ class SpecialElementsAssemblyTable(AssemblyTableDataPreparator):
                         step_file = save_folder_opt / 'STEP' / saving_group.save_file_name.with_suffix('.step')
                         utils.save_body_from_component_like_step(saving_group.component, saving_group.body, step_file)
                         utils.success.log_line(f"STEP file created: {step_file}")
-                    self.__table_data.append([component_full_name, step, quantity_evaluator(saving_group.valid_metadata.quantity), buy_link if buy_link else 'None'])
+                    self.__table_data.append([
+                        special_name_opt if special_name_opt else component_full_name,
+                        step,
+                        quantity_evaluator(saving_group.valid_metadata.quantity),
+                        buy_link_opt if buy_link_opt else 'None',
+                    ])
                     break
         return self
 
 
-class ISOToolboxAssemblyTable(AssemblyTableDataPreparator):
+class ISOToolboxAssemblyTable(TableDataPreparator):
     """TODO: need to provide some comment"""
 
     def __init__(self, saving_groups):
@@ -120,7 +102,7 @@ class AssemblyDocCreator(IDocumentCreator):
             "",
         ]
 
-    def add_table(self, header, table: AssemblyTableDataPreparator) -> 'AssemblyDocCreator':
+    def add_table(self, header, table: TableDataPreparator) -> 'AssemblyDocCreator':
         try:
             table = tabulate(table.get_data(), table.get_headers(), tablefmt="pipe")
             self.__content.extend([
@@ -135,6 +117,7 @@ class AssemblyDocCreator(IDocumentCreator):
     def create(self, save_folder: pathlib.Path):
         doc_file_path = save_folder / 'Assembly_Components.md'
         try:
+            save_folder.mkdir(parents=True, exist_ok=True)
             with open(doc_file_path, "w", encoding="utf-8") as file:
                 file.write("\n".join(self.__content))
             utils.success.log_line(f"Assembly documentation created: {doc_file_path}")
