@@ -6,10 +6,18 @@ from collections.abc import Callable
 import utils
 
 __all__ = [
+    'NameTransformator',
     'QuantityEvaluator',
     'TableDataPreparator',
     'IDocumentCreator',
 ]
+
+
+class NameTransformator(Callable[[str], str]):
+    """TODO: need to provide some comment"""
+
+    def __call__(self, name: str) -> str:
+        return name
 
 
 class QuantityEvaluator(Callable[[int], int]):

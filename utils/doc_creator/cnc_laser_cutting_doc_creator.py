@@ -4,7 +4,7 @@ import pathlib
 from tabulate import tabulate
 from typing import List, Tuple, Optional
 
-from .i_document_creator import IDocumentCreator, TableDataPreparator, QuantityEvaluator
+from .i_document_creator import IDocumentCreator, TableDataPreparator, QuantityEvaluator, NameTransformator
 
 import utils
 
@@ -31,6 +31,7 @@ class LaserCuttingManufacturingElementsTable(TableDataPreparator):
     def prepare_data(self,
                      match_expressions: List[str],
                      *,
+                     name_transformator: NameTransformator = NameTransformator(),
                      quantity_evaluator: QuantityEvaluator = QuantityEvaluator(),
                      step: bool = False,
                      dxf: bool = False,
@@ -43,17 +44,18 @@ class LaserCuttingManufacturingElementsTable(TableDataPreparator):
                     if saving_group.mark is not None:
                         raise Exception(f"'{component_full_name}' is already accounted by '{saving_group.mark}'-mark")
                     saving_group.mark = f"LaserCuttingManufacturingElementsTable by '{match_expression}'"
+                    save_file_name = name_transformator(str(saving_group.save_file_name))
                     if step:
                         assert save_folder_opt
-                        step_file = save_folder_opt / 'STEP' / saving_group.save_file_name.with_suffix('.step')
+                        step_file = save_folder_opt / 'STEP' / pathlib.Path(save_file_name).with_suffix('.step')
                         utils.save_body_from_component_like_step(saving_group.component, saving_group.body, step_file)
                         utils.success.log_line(f"STEP file created: {step_file}")
                     if dxf:
                         assert save_folder_opt
-                        dxf_file = save_folder_opt / 'DXF' / saving_group.save_file_name.with_suffix('.dxf')
+                        dxf_file = save_folder_opt / 'DXF' / pathlib.Path(save_file_name).with_suffix('.dxf')
                         utils.save_body_from_component_like_dxf(saving_group.component, saving_group.body, dxf_file)
                         utils.success.log_line(f"DXF file created: {dxf_file}")
-                    self.__table_data.append([component_full_name, step, dxf, quantity_evaluator(saving_group.valid_metadata.quantity)])
+                    self.__table_data.append([save_file_name, step, dxf, quantity_evaluator(saving_group.valid_metadata.quantity)])
                     break
         return self
 

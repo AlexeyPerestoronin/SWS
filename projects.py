@@ -21,3 +21,4 @@ load_project_task(SWP_FOLDER / "МАСТЕРСКАЯ/Кинематически�
 load_project_task(SWP_FOLDER / "МАСТЕРСКАЯ/Запор-Для-Ворот/automated.py", "gate_latch")
 load_project_task(SWP_FOLDER / "МАСТЕРСКАЯ/Кинематический-Верстак/V3/automated.py", "kinematic_workbench_v_iii")
 load_project_task(SWP_FOLDER / "МАСТЕРСКАЯ/Держатель-Для-Сварочной-Горелки/automated.py", "welding_torch_holder")
+load_project_task(SWP_FOLDER / "МАСТЕРСКАЯ/Платформа-Лифтовая-Поворотная/концепт/automated.py", "rotation_lift_platform")
