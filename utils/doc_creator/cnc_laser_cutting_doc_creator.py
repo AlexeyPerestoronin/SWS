@@ -96,6 +96,8 @@ class CNCLaserCuttingDocCreator(IDocumentCreator):
             raise RuntimeError(f"cannot add '{header}'-table in DOC: {error}")
         return self
 
+    # steel-sheet
+
     def add_8mm_steel_sheet_table(self, table: TableDataPreparator) -> 'CNCLaserCuttingDocCreator':
         return self.add_table('Лист стальной горячекатанный 8мм', table, 'https://купитьметалл.рф/product/list-gk-8-st3sp-ps-5')
 
@@ -104,6 +106,11 @@ class CNCLaserCuttingDocCreator(IDocumentCreator):
 
     def add_4mm_steel_sheet_table(self, table: TableDataPreparator) -> 'CNCLaserCuttingDocCreator':
         return self.add_table('Лист стальной горячекатанный 4мм', table, 'https://купитьметалл.рф/product/list-gk-4-st3sp-ps-5')
+
+    # profile-tube
+
+    def add_50_50_4mm_steel_profile_tube_table(self, table: TableDataPreparator) -> 'CNCLaserCuttingDocCreator':
+        return self.add_table('Труба профильная стальная 50x50x4мм', table, 'https://купитьметалл.рф/product/truba-kvadratnaya-50x50x4')
 
     def create(self, save_folder: pathlib.Path):
         doc_file_path = save_folder / 'CNC_Laser_Metal_Cutting.md'

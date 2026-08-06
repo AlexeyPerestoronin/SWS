@@ -1,6 +1,6 @@
 import pathlib
 
-from typing import List, Tuple, Optional, TypeAlias
+from typing import List, Tuple, Optional, TypeAlias, Protocol
 from pyswx.api.sldworks.interfaces import IAssemblyDoc, IModelDoc2, IComponent2, IBody2
 from pyswx.api.swconst.enumerations import SWDocumentTypesE, SWBodyTypeE
 
@@ -9,8 +9,24 @@ from . import i_body_utils, open_document
 import utils
 
 __all__ = [
+    'AssemblyComponentsFilter',
     'UniqueBodiesManager',
 ]
+
+
+class AssemblyComponentsFilter(Protocol):
+    """TODO: need to provide some comment"""
+
+    def __call__(self, component: IComponent2, level: int) -> bool:
+        ...
+
+
+class PassAllComponent(AssemblyComponentsFilter):
+    """TODO: need to provide some comment"""
+
+    def __call__(self, component: IComponent2, level: int) -> bool:
+        utils.logger.info.log_line(f"{level}-level assembly component '{component.name2}' passed")
+        return True
 
 
 class UniqueBodiesManager:
@@ -23,7 +39,7 @@ class UniqueBodiesManager:
     def __init__(self):
         self.__unique_bodies: UniqueBodiesManager.UniqueBodies = []
 
-    def add_from_project(self, project_path: pathlib.Path, *, configuration: Optional[str] = None):
+    def add_from_project(self, project_path: pathlib.Path, *, configuration: Optional[str] = None, component_filter: AssemblyComponentsFilter = PassAllComponent()):
         """
         Recursively add solid bodies from SW project.
         """
@@ -33,11 +49,11 @@ class UniqueBodiesManager:
             self.add_from_model(project_root.root_model, configuration=configuration)
         elif project_path.suffix == '.SLDASM':
             project_root = open_document(project_path, SWDocumentTypesE.SW_DOC_ASSEMBLY)
-            self.add_from_assembly(project_root.root_assembly, configuration=configuration)
+            self.add_from_assembly(project_root.root_assembly, configuration=configuration, component_filter=component_filter)
         else:
             raise Exception(f"unexpected type of project's extension '{project_extension}', it's available only *.SLDPRT or *.SLDASM")
 
-    def add_from_assembly(self, assembly: IAssemblyDoc, *, configuration: Optional[str] = None):
+    def add_from_assembly(self, assembly: IAssemblyDoc, *, configuration: Optional[str] = None, component_filter: AssemblyComponentsFilter = PassAllComponent()):
         """
         Recursively add solid bodies from assembly components (parts/assemblies).
         """
@@ -45,18 +61,20 @@ class UniqueBodiesManager:
         if configuration and active_configuration_name != configuration:
             assert assembly.show_configuration2(configuration)
             utils.logger.warning.log_line(f"change active configuration of assembly from '{active_configuration_name}' to '{configuration}'")
-        components = assembly.get_components(True)
-        while len(components) > 0:
-            component = components.pop(0)
-            print(f"component detected '{component.name2}'")
-            component_type = component.get_type()
-            if component_type == SWDocumentTypesE.SW_DOC_PART:
-                self.add_from_component(component)
-            elif component_type in (SWDocumentTypesE.SW_DOC_ASSEMBLY, SWDocumentTypesE.SW_DOC_NONE):
-                for sub_component in component.get_children():
-                    components.append(sub_component)
-            else:
-                raise Exception(f"unexpected component-type '{component_type}' for component {component.name2}")
+        levels_components = [[component, 0] for component in assembly.get_components(True)]
+        while len(levels_components) > 0:
+            (component, level) = levels_components.pop(0)
+            if component_filter(component, level):
+                component_type = component.get_type()
+                if component_type == SWDocumentTypesE.SW_DOC_PART:
+                    self.add_from_component(component)
+                elif component_type in (SWDocumentTypesE.SW_DOC_ASSEMBLY, SWDocumentTypesE.SW_DOC_NONE):
+                    children = component.get_children()
+                    if component_type == SWDocumentTypesE.SW_DOC_NONE and len(children) != 0:
+                        raise Exception(f"component-'{component.name2} ({component.referenced_configuration})' has NONE-type but but has children")
+                    levels_components.extend([[sub_component, level + 1] for sub_component in children])
+                else:
+                    raise Exception(f"unexpected component-type '{component_type}' for component {component.name2}")
 
     def add_from_model(self, model: IModelDoc2, *, configuration: Optional[str] = None):
         """
