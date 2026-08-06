@@ -71,7 +71,7 @@ def get_solid_body_folders_in_component(component: IComponent2, use_cache: bool 
         setattr(get_solid_body_folders_in_component, 'component_folders_cache', {})
     component_folders_cache = getattr(get_solid_body_folders_in_component, 'component_folders_cache')
     # ---
-    cache_key = f"{component.name2} {component.referenced_configuration}"
+    cache_key = f"{component.get_model_doc2().get_path_name().stem} ({component.referenced_configuration})"
     cached_folders = component_folders_cache.get(cache_key, None)
     if not cached_folders or use_cache == False:
         cached_folders = i_feature_utils.select_solid_body_folders_in_feature_list(component.first_feature)

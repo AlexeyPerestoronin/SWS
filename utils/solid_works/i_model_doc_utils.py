@@ -14,8 +14,6 @@ __all__ = [
     'DefaultModelValidator',
     'ISOModelValidator',
     'validate_and_parse_model_name',
-    'get_solid_body_folders_in_model',
-    'detect_folder_for_body_in_model',
 ]
 
 
@@ -115,37 +113,3 @@ def validate_and_parse_model_name(model: IModelDoc2, *, validators: List[ModelNa
         if valid_model_name_opt:
             return valid_model_name_opt
     raise Exception(f"model name '{model.get_path_name().stem}' does not validate any of validators: {[validator.name for validator in validators]}")
-
-
-def get_solid_body_folders_in_model(model: IModelDoc2, use_cache: bool = True) -> List[IBodyFolder]:
-    """
-    Get all folders with solid bodies in the model.
-    """
-    if not hasattr(get_solid_body_folders_in_model, 'model_folders_cache'):
-        setattr(get_solid_body_folders_in_model, 'model_folders_cache', {})
-    model_folders_cache = getattr(get_solid_body_folders_in_model, 'model_folders_cache')
-    # ---
-    cache_key = f"{model.get_path_name()} {model.configuration_manager.active_configuration.name}"
-    cached_folders = model_folders_cache.get(cache_key, None)
-    if not cached_folders or use_cache == False:
-        cached_folders = i_feature_utils.select_solid_body_folders_in_feature_list(model.first_feature)
-        model_folders_cache[cache_key] = cached_folders
-    return cached_folders
-
-
-def detect_folder_for_body_in_model(model: IModelDoc2, body: IBody2, use_cache: bool = True) -> Optional[IBodyFolder]:
-    """
-    Detect the containing body folder for a given body in the model.
-    """
-    folders = get_solid_body_folders_in_model(model, use_cache)
-    for folder in folders:
-        for body_in_folder in folder.get_bodies():
-            if body_in_folder.name == body.name:
-                folder_type = folder.type
-                if folder_type == SWBodyFolderFeatureTypE.SW_SOLID_BODY_FOLDER:
-                    return None
-                elif folder_type == SWBodyFolderFeatureTypE.SW_BODY_SUB_FOLDER:
-                    return folder
-                else:
-                    raise Exception(f"body '{body.name}' is found in unexpected folder: folder's type is {folder_type}, name is '{folder.name}'")
-    raise Exception(f"cannot detect folder for the body '{body.name}': list of model's folders is {[folder.get_feature().name for folder in folders]}")
