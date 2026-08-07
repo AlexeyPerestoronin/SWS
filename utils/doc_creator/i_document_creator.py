@@ -1,6 +1,7 @@
+import re
 import pathlib
 
-from typing import Protocol, List
+from typing import Protocol, List, Tuple, Optional
 from collections.abc import Callable
 
 import utils
@@ -9,6 +10,7 @@ __all__ = [
     'NameTransformator',
     'QuantityEvaluator',
     'TableDataPreparator',
+    'StandardElementsTable',
     'IDocumentCreator',
 ]
 
@@ -44,6 +46,52 @@ class TableDataPreparator(Protocol):
     def prepare_data(self):
         """Process saving groups and populate the table data."""
         ...
+
+
+class StandardElementsTable(TableDataPreparator):
+    """TODO: need to provide some comment"""
+
+    def __init__(self, saving_groups: utils.SavingGroups):
+        super().__init__(saving_groups)
+        self.__table_data: List[Tuple[str, str, str, str]] = []
+
+    def get_headers(self) -> List[str]:
+        return ["Компонент", "STEP", "DXF", "Количество (штук)"]
+
+    def get_data(self) -> list:
+        self.__table_data = sorted(self.__table_data, key=lambda x: x[0])
+        return self.__table_data
+
+    def prepare_data(self,
+                     match_expressions: List[str],
+                     *,
+                     name_transformator: NameTransformator = NameTransformator(),
+                     quantity_evaluator: QuantityEvaluator = QuantityEvaluator(),
+                     step: bool = False,
+                     dxf: bool = False,
+                     save_folder_opt: Optional[pathlib.Path] = None) -> 'StandardElementsTable':
+        for saving_group in self._saving_groups:
+            component_full_name = str(saving_group.save_file_name)
+            for match_expression in match_expressions:
+                match = re.fullmatch(match_expression, component_full_name)
+                if match:
+                    if saving_group.mark is not None:
+                        raise Exception(f"'{component_full_name}' is already accounted by '{saving_group.mark}'-mark")
+                    saving_group.mark = f"StandardElementsTable by '{match_expression}'"
+                    save_file_name = name_transformator(str(saving_group.save_file_name))
+                    if step:
+                        assert save_folder_opt
+                        step_file = save_folder_opt / 'STEP' / pathlib.Path(save_file_name).with_suffix('.step')
+                        utils.save_body_from_component_like_step(saving_group.component, saving_group.body, step_file)
+                        utils.success.log_line(f"STEP file created: {step_file}")
+                    if dxf:
+                        assert save_folder_opt
+                        dxf_file = save_folder_opt / 'DXF' / pathlib.Path(save_file_name).with_suffix('.dxf')
+                        utils.save_body_from_component_like_dxf(saving_group.component, saving_group.body, dxf_file)
+                        utils.success.log_line(f"DXF file created: {dxf_file}")
+                    self.__table_data.append([save_file_name, step, dxf, quantity_evaluator(saving_group.valid_metadata.quantity)])
+                    break
+        return self
 
 
 class IDocumentCreator(Protocol):
