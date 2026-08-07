@@ -181,7 +181,9 @@ def save_body_from_component_like_dxf(component: IComponent2,
         target_face = target_face_detecter(root_body.get_faces())
 
         root_model.clear_selection2(True)
-        assert target_face.select_4(False, root_model.selection_manager.create_select_data())
-        assert root_model.export_to_DXF(dxf_save_path)
+        if not target_face.select_4(False, root_model.selection_manager.create_select_data()):
+            raise Exception('cannot select target face')
+        if not root_model.export_to_DXF(dxf_save_path):
+            raise Exception('export error')
     except Exception as error:
         raise Exception(f"cannot save '{body.name}'-body in DFX file '{dxf_save_path}': {error}")
