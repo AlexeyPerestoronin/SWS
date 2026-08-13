@@ -25,6 +25,10 @@ ISO_ELEMENTS = {
         'translation': 'болт шестигранный',
         'type_to_links': {}
     },
+    'hex flange bolt': {
+        'translation': 'болт шестигранный с фланцем',
+        'type_to_links': {}
+    },
     'hex screw': {
         'translation': 'винт шестигранный',
         'type_to_links': {}

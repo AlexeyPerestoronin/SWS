@@ -21,7 +21,7 @@ class MaterialInfoTable(TableDataPreparator):
         self.__table_data: List[Tuple[str, str]] = []
 
     def get_headers(self) -> List[str]:
-        return ["<тип>", "<значение>"]
+        return ["Параметр", "Показатель"]
 
     def get_data(self) -> list:
         return self.__table_data
