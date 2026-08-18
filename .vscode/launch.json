@@ -42,10 +42,10 @@
             "program": "${workspaceFolder}/.venv/Scripts/invoke.exe",
             "cwd": "${workspaceFolder}",
             "args": [
-                "projects.rotation-chair.make-doc"
+                // "projects.rotation-chair.make-doc"
                 // "projects.rotation-chair.prepare-wood-manufacturing-doc"
                 // "projects.mm-v-iv.engineering-wall-ls.make-doc"
-                // "projects.mm-v-iv.engineering-wall-ls.prepare-wood-manufacturing-doc"
+                "projects.mm-v-iv.engineering-wall-ls.convert-doc-to-zip"
                 // "projects.mm-v-iv.engineering-wall-ls.prepare-steel-manufacturing-doc"
             ],
         }
