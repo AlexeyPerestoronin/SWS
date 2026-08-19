@@ -181,7 +181,7 @@ class SavingGroups(List[SavingGroup]):
     """List of SavingGroup entries for all unique body groups to be exported."""
 
 
-def prepare_saving_groups(unique_bodies: UniqueBodiesManager.UniqueBodies, save_file_name_creator: SaveFileNameCreator = StandardSaveFileNameCreator()) -> List[SavingGroup]:
+def prepare_saving_groups(unique_bodies: UniqueBodiesManager.UniqueBodies, save_file_name_creator: SaveFileNameCreator = StandardSaveFileNameCreator()) -> SavingGroups:
     """
     Prepare unique export paths for groups of identical bodies across components.
     """
