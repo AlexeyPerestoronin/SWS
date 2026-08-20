@@ -1,7 +1,7 @@
 import re, pathlib, math
 from typing import TypeAlias, List, Optional, Protocol
-from pyswx.api.sldworks.interfaces import IComponent2, IBodyFolder, IBody2, IFace2
-from pyswx.api.swconst.enumerations import SWBodyFolderFeatureTypE, SWBodyTypeE, SWSaveAsOptionsE, SWSaveAsVersionE
+from pyswx.api.sldworks.interfaces import IComponent2, IBodyFolder, IBody2, IFace2, IFeature
+from pyswx.api.swconst.enumerations import SWBodyFolderFeatureTypE, SWBodyTypeE, SWDocumentTypesE, SWSaveAsOptionsE, SWSaveAsVersionE
 
 from .i_model_doc_utils import ValidModelName, validate_and_parse_model_name
 from . import i_feature_utils, i_body_utils
@@ -67,6 +67,13 @@ def get_solid_body_folders_in_component(component: IComponent2, use_cache: bool 
     """
     Get all folders with solid bodies in the component.
     """
+    def get_first_feature(component: IComponent2) -> IFeature:
+        """Head of the FeatureManager tree that actually contains SolidBodyFolder nodes"""
+        model = component.get_model_doc2()
+        if model is not None and model.get_type() == SWDocumentTypesE.SW_DOC_PART and component.get_parent() is None:
+            return model.first_feature
+        return component.first_feature
+
     if not hasattr(get_solid_body_folders_in_component, 'component_folders_cache'):
         setattr(get_solid_body_folders_in_component, 'component_folders_cache', {})
     component_folders_cache = getattr(get_solid_body_folders_in_component, 'component_folders_cache')
@@ -74,7 +81,7 @@ def get_solid_body_folders_in_component(component: IComponent2, use_cache: bool 
     cache_key = f"{component.get_model_doc2().get_path_name().stem} ({component.referenced_configuration})"
     cached_folders = component_folders_cache.get(cache_key, None)
     if not cached_folders or use_cache == False:
-        cached_folders = i_feature_utils.select_solid_body_folders_in_feature_list(component.first_feature)
+        cached_folders = i_feature_utils.select_solid_body_folders_in_feature_list(get_first_feature(component))
         component_folders_cache[cache_key] = cached_folders
     return cached_folders
 
