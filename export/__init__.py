@@ -20,7 +20,7 @@ def step_from_part(ctx, path: str = None, save_subfolder: str = None, execute: b
     root_model = utils.open_document(path, SWDocumentTypesE.SW_DOC_PART).root_model
 
     unique_bodies_manager = utils.UniqueBodiesManager()
-    unique_bodies_manager.add_from_model(root_model)
+    unique_bodies_manager.add_from_part(root_model)
 
     save_folder = root_model.get_path_name().parent
     if save_subfolder:

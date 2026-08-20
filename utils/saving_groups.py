@@ -1,7 +1,7 @@
 import re
 import pathlib
 
-from typing import List, Tuple, Set, TypeAlias, Protocol, Optional
+from typing import List, Set, Protocol, Optional
 from pyswx.api.sldworks.interfaces import IComponent2, IBody2
 
 from .logger import *
@@ -15,6 +15,7 @@ __all__ = [
     'SavingGroup',
     'SavingGroups',
     'prepare_saving_groups',
+    'scan_unused_saving_group',
 ]
 
 
@@ -212,3 +213,29 @@ def prepare_saving_groups(unique_bodies: UniqueBodiesManager.UniqueBodies, save_
         return result_saving_groups
     except Exception as error:
         raise Exception(f"cannot prepare saving group: {error}")
+
+
+def scan_unused_saving_group(saving_groups: SavingGroups, skip_elements: Optional[List[str]] = None) -> bool:
+    """Сканирует группу-сохранение на предмет неучтённых элементов.
+
+    Проверяются только группы без марки (``mark``): они не были обработаны.
+    Если ``save_file_name`` удовлетворяет одному из ``skip_elements``, элемент
+    считается намеренно пропущенным; иначе фиксируется как неучтённый.
+
+    :param saving_groups: проверяемая коллекция групп сохранения
+    :param skip_elements: опциональный список регулярных выражений, которым должны удовлетворять намеренно пропущенные элементы
+    :return: ``True``, если неучтённых элементов не обнаружено; ``False`` в обратном случае
+    """
+    skip_patterns = skip_elements or []
+    all_accounted = True
+    for saving_group in saving_groups:
+        if saving_group.mark is not None:
+            continue
+        save_file_name = str(saving_group.save_file_name)
+        matched_pattern = next((pattern for pattern in skip_patterns if re.fullmatch(pattern, save_file_name)), None)
+        if matched_pattern is not None:
+            info.log_line(f"detected unused element '{save_file_name}' matching skip pattern '{matched_pattern}'")
+        else:
+            error.log_line(f"detected unclassified element '{save_file_name}'")
+            all_accounted = False
+    return all_accounted

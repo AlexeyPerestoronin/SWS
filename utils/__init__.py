@@ -5,7 +5,7 @@ import pathlib
 import functools
 from datetime import datetime
 
-from typing import List
+from typing import List, Optional
 from pyswx.api.sldworks.interfaces import IModelDoc2
 from pyswx.api.sldworks.interfaces import IModelDoc2, IBodyFolder
 
@@ -17,6 +17,7 @@ __all__ = [
     # local utils functions
     'validate_project_naming',
     'validate_folders_naming',
+    'prepare_saving_groups_for_project',
     'prepare_archive',
     'sw_task',
     # sub modules
@@ -51,20 +52,30 @@ def validate_folders_naming(folders: List[IBodyFolder]):
     return True
 
 
-def prepare_archive(root_dir: pathlib.Path, archive_dir: pathlib.Path, archive_name: str, archive_type: str, add_date: bool):
+def prepare_saving_groups_for_project(project_path: pathlib.Path, component_filter: Optional[AssemblyComponentsFilter] = None) -> SavingGroups:
+    unique_bodies_manager = UniqueBodiesManager()
+    unique_bodies_manager.add_from_project(project_path, component_filter_opt=component_filter)
+    return prepare_saving_groups(unique_bodies_manager.unique_bodies)
+
+
+def prepare_archive(root_dir: pathlib.Path, archive_dir: pathlib.Path, archive_name: str, archive_type: str, add_date: bool) -> bool:
     """
-    Создаёт архив:
-    @root_dir - задаёт корневую директорию из которой должны браться данные для архивирования
-    @archive_dir - задаёт директорию где должен появиться архив
-    @archive_name - задаёт имя архива
-    @archive_type - задаёт тип архива (например 'zip')
-    @add_date - если True добавляет к имени архива постфикс времени в формате %Y-%m-%d
+    Создаёт архив
+    
+    :param root_dir: задаёт корневую директорию из которой должны браться данные для архивирования
+    :param archive_dir: задаёт директорию где должен появиться архив
+    :param archive_name: задаёт имя архива
+    :param archive_type: задаёт тип архива (например 'zip')
+    :param add_date: если True добавляет к имени архива постфикс времени в формате %Y-%m-%d
+
+    :return: ``True``, если архив был успешно создан; ``False`` в обратном случае.
     """
     if add_date:
-        archive_name = f"{archive_name} {datetime.now().strftime('%Y-%m-%d')}"
+        archive_name = f"{archive_name} {datetime.now().strftime('%Y-%m-%d_%H-%M')}"
     archive = (archive_dir / archive_name).with_suffix(f'.{archive_type}')
     archive.unlink(missing_ok=True)
     shutil.make_archive(base_name=str(archive.with_suffix('')), root_dir=root_dir, format=archive_type)
+    return archive.exists()
 
 
 def sw_task(doc_string: str = None, *args, **kwargs):

@@ -39,17 +39,17 @@ class UniqueBodiesManager:
     def __init__(self):
         self.__unique_bodies: UniqueBodiesManager.UniqueBodies = []
 
-    def add_from_project(self, project_path: pathlib.Path, *, configuration: Optional[str] = None, component_filter: AssemblyComponentsFilter = PassAllComponent()):
+    def add_from_project(self, project_path: pathlib.Path, *, configuration: Optional[str] = None, component_filter_opt: Optional[AssemblyComponentsFilter] = None):
         """
         Recursively add solid bodies from SW project.
         """
         project_extension = project_path.suffix
         if project_path.suffix == '.SLDPRT':
             project_root = open_document(project_path, SWDocumentTypesE.SW_DOC_PART)
-            self.add_from_model(project_root.root_model, configuration=configuration)
+            self.add_from_part(project_root.root_model, configuration=configuration)
         elif project_path.suffix == '.SLDASM':
             project_root = open_document(project_path, SWDocumentTypesE.SW_DOC_ASSEMBLY)
-            self.add_from_assembly(project_root.root_assembly, configuration=configuration, component_filter=component_filter)
+            self.add_from_assembly(project_root.root_assembly, configuration=configuration, component_filter=component_filter_opt if component_filter_opt else PassAllComponent())
         else:
             raise Exception(f"unexpected type of project's extension '{project_extension}', it's available only *.SLDPRT or *.SLDASM")
 
@@ -76,7 +76,7 @@ class UniqueBodiesManager:
                 else:
                     raise Exception(f"unexpected component-type '{component_type}' for component {component.name2}")
 
-    def add_from_model(self, model: IModelDoc2, *, configuration: Optional[str] = None):
+    def add_from_part(self, model: IModelDoc2, *, configuration: Optional[str] = None):
         """
         Add solid bodies from model root component.
         """
