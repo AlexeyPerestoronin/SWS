@@ -67,6 +67,7 @@ def get_solid_body_folders_in_component(component: IComponent2, use_cache: bool 
     """
     Get all folders with solid bodies in the component.
     """
+
     def get_first_feature(component: IComponent2) -> IFeature:
         """Head of the FeatureManager tree that actually contains SolidBodyFolder nodes"""
         model = component.get_model_doc2()
