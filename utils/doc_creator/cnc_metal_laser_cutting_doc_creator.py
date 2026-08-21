@@ -59,6 +59,9 @@ class CNCMetalLaserCuttingDocCreator(IDocumentCreator):
     def add_4mm_steel_sheet_table(self, table: TableDataPreparator) -> 'CNCMetalLaserCuttingDocCreator':
         return self.add_table('Лист стальной горячекатанный 4мм', table, 'https://купитьметалл.рф/product/list-gk-4-st3sp-ps-5')
 
+    def add_3mm_steel_sheet_table(self, table: TableDataPreparator) -> 'CNCMetalLaserCuttingDocCreator':
+        return self.add_table('Лист стальной горячекатанный 3мм', table, 'https://купитьметалл.рф/product/list-gk-3-st3sp-ps-5')
+
     def add_2mm_steel_sheet_table(self, table: TableDataPreparator) -> 'CNCMetalLaserCuttingDocCreator':
         return self.add_table('Лист стальной горячекатанный 2мм', table, 'https://купитьметалл.рф/product/list-gk-2-st3sp-ps-5')
 
