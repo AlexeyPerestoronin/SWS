@@ -3,8 +3,7 @@ import pathlib
 from tabulate import tabulate
 from typing import Optional
 
-from .i_document_creator import IDocumentCreator, TableDataPreparator
-from .cnc_wood_milling_cutting_doc_creator import MaterialInfoTable
+from .i_document_creator import IDocumentCreator, TableDataPreparator, MaterialInfoTable
 
 import utils
 

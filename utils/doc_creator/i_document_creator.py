@@ -11,6 +11,7 @@ __all__ = [
     'QuantityEvaluator',
     'TableDataPreparator',
     'StandardElementsTable',
+    'MaterialInfoTable',
     'IDocumentCreator',
 ]
 
@@ -91,6 +92,24 @@ class StandardElementsTable(TableDataPreparator):
                         utils.success.log_line(f"DXF file created: {dxf_file}")
                     self.__table_data.append([save_file_name, step, dxf, quantity_evaluator(saving_group.valid_metadata.quantity)])
                     break
+        return self
+
+
+class MaterialInfoTable(TableDataPreparator):
+    """TODO: need to provide some comment"""
+
+    def __init__(self):
+        super().__init__(None)
+        self.__table_data: List[Tuple[str, str]] = []
+
+    def get_headers(self) -> List[str]:
+        return ["Параметр", "Показатель"]
+
+    def get_data(self) -> list:
+        return self.__table_data
+
+    def prepare_data(self, data: List[Tuple[str, str]]) -> 'MaterialInfoTable':
+        self.__table_data.extend(data)
         return self
 
 

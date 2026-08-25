@@ -1,35 +1,14 @@
-import shutil
 import pathlib
 
 from tabulate import tabulate
-from typing import Optional, List, Tuple
 
-from .i_document_creator import IDocumentCreator, TableDataPreparator
+from .i_document_creator import IDocumentCreator, TableDataPreparator, MaterialInfoTable
 
 import utils
 
 __all__ = [
-    'MaterialInfoTable',
     'CNCWoodMillingCuttingDocCreator',
 ]
-
-
-class MaterialInfoTable(TableDataPreparator):
-    """TODO: need to provide some comment"""
-
-    def __init__(self):
-        super().__init__(None)
-        self.__table_data: List[Tuple[str, str]] = []
-
-    def get_headers(self) -> List[str]:
-        return ["Параметр", "Показатель"]
-
-    def get_data(self) -> list:
-        return self.__table_data
-
-    def prepare_data(self, data: List[Tuple[str, str]]) -> 'MaterialInfoTable':
-        self.__table_data.extend(data)
-        return self
 
 
 class CNCWoodMillingCuttingDocCreator(IDocumentCreator):
