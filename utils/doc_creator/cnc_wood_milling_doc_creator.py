@@ -7,11 +7,11 @@ from .i_document_creator import IDocumentCreator, TableDataPreparator, MaterialI
 import utils
 
 __all__ = [
-    'CNCWoodMillingCuttingDocCreator',
+    'CNCWoodMillingDocCreator',
 ]
 
 
-class CNCWoodMillingCuttingDocCreator(IDocumentCreator):
+class CNCWoodMillingDocCreator(IDocumentCreator):
     """Генератор ТЗ в виде Markdown-документа для фрезерной резки дерева"""
 
     def __init__(self, project_name: str):
@@ -28,7 +28,7 @@ class CNCWoodMillingCuttingDocCreator(IDocumentCreator):
             "",
         ]
 
-    def add_table(self, header: str, table: TableDataPreparator, material_info_table: MaterialInfoTable) -> 'CNCWoodMillingCuttingDocCreator':
+    def add_table(self, header: str, table: TableDataPreparator, material_info_table: MaterialInfoTable) -> 'CNCWoodMillingDocCreator':
         try:
             table = tabulate(table.get_data(), table.get_headers(), tablefmt="pipe")
             material_info_table = tabulate(material_info_table.get_data(), material_info_table.get_headers(), tablefmt="pipe")
@@ -48,7 +48,7 @@ class CNCWoodMillingCuttingDocCreator(IDocumentCreator):
 
     # wood-sheet(s)
 
-    def add_12mm_OSB(self, table: TableDataPreparator) -> 'CNCWoodMillingCuttingDocCreator':
+    def add_12mm_OSB(self, table: TableDataPreparator) -> 'CNCWoodMillingDocCreator':
         material_info_table = MaterialInfoTable()
         material_info_table.prepare_data([
             ["материал", "ОСБ плита"],
@@ -61,7 +61,7 @@ class CNCWoodMillingCuttingDocCreator(IDocumentCreator):
         ])
         return self.add_table('ОСБ 12мм', table, material_info_table)
 
-    def add_15mm_plywood(self, table: TableDataPreparator) -> 'CNCWoodMillingCuttingDocCreator':
+    def add_15mm_plywood(self, table: TableDataPreparator) -> 'CNCWoodMillingDocCreator':
         material_info_table = MaterialInfoTable()
         material_info_table.prepare_data([
             ["материал", "фанера"],
