@@ -13,12 +13,7 @@ __all__ = [
 
 
 class CNCMetalLaserCuttingDocCreator(IDocumentCreator):
-    """Генератор Markdown-документа для лазерной резки металла (STEP/DXF).
-
-    Класс собирает «шапку» с технологическими пояснениями и добавляет таблицы
-
-    деталей/файлов (STEP и/или DXF) с указанием количества.
-    """
+    """Генератор ТЗ в виде Markdown-документа для лазерной резки металла"""
 
     def __init__(self, project_name: str):
         self.__content = [
