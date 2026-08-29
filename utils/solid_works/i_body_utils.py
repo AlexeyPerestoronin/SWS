@@ -57,7 +57,8 @@ class BodyNameValidationApproach(str, Enum):
 
 class ValidBodyName:
     MainName: TypeAlias = str
-    SuffixesOpt: TypeAlias = Tuple[List[str], None]
+    SuffixesOpt: TypeAlias = Optional[List[str]]
+    IndexOpt: TypeAlias = Optional[int]
 
     def __init__(self, main_name: MainName, suffixes: SuffixesOpt, approach: BodyNameValidationApproach):
         self.__main_name = main_name
@@ -73,6 +74,10 @@ class ValidBodyName:
 
     @property
     def suffixes(self) -> SuffixesOpt:
+        return self.__suffixes
+
+    @property
+    def suffixes(self) -> IndexOpt:
         return self.__suffixes
 
     @property
