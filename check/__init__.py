@@ -33,14 +33,14 @@ def bodies_naming(ctx, path: str = None, repair: bool = False):
 
     for same_bodies in unique_bodies:
         utils.status.log_line(f"Detected {len(same_bodies)} same bodies:")
+        has_auto_defined_names = False
         for (i, (body, component)) in enumerate(same_bodies, 1):
-            valid_body_name = None
-            try:
-                valid_body_name = utils.validate_and_parse_body_name(body)
-                utils.info.log_line(f" {i}-body has right name '{body.name}'")
-                # TODO: ...
-            except:
-                utils.error.log_line(f" {i}-body has wrong name '{body.name}'!")
+            valid_body_name = utils.validate_and_parse_body_name(body)
+            if valid_body_name.approach == utils.BodyNameValidationApproach.USER_NAME:
+                utils.info.log_line(f" {i}-body has right name user's defined name '{body.name}'")
+            else:
+                utils.warning.log_line(f" {i}-body has right auto defined name '{body.name}'")
+                has_auto_defined_names = True
 
 
 @invoke.task(help={
