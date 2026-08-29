@@ -53,6 +53,9 @@ def validate_folders_naming(folders: List[IBodyFolder]):
 
 
 def prepare_saving_groups_for_project(project_path: pathlib.Path, component_filter: Optional[AssemblyComponentsFilter] = None) -> SavingGroups:
+    """
+    TODO: need to provide some comment
+    """
     unique_bodies_manager = UniqueBodiesManager()
     unique_bodies_manager.add_from_project(project_path, component_filter_opt=component_filter)
     return prepare_saving_groups(unique_bodies_manager.unique_bodies)

@@ -1,13 +1,15 @@
 import re
-from typing import TypeAlias, List, Tuple
+
+from enum import Enum
+from typing import TypeAlias, List, Tuple, Protocol, Optional
 from pyswx.api.sldworks.interfaces import IBody2
 
 __all__ = [
     'is_two_body_equal',
     'get_equal_bodies_groups',
+    'BodyNameValidationApproach',
     'ValidBodyName',
     'validate_and_parse_body_name',
-    'validate_and_parse_bodies_names',
 ]
 
 
@@ -43,6 +45,11 @@ def get_equal_bodies_groups(bodies: List[IBody2]) -> List[List[IBody2]]:
     return unique_bodies
 
 
+class BodyNameValidationApproach(str, Enum):
+    SW_INSERTED_PART = 'SolidWorks inserted part body-name'
+    SW_AUTO_NAME = 'SolidWorks auto body-name'
+    USER_NAME = "user's defined body-name"
+
 class ValidBodyName:
     MainName: TypeAlias = str
     SuffixesOpt: TypeAlias = Tuple[List[str], None]
@@ -61,6 +68,51 @@ class ValidBodyName:
     @property
     def suffixes(self) -> SuffixesOpt:
         return self.__suffixes
+
+
+class BodyNameValidator(Protocol):
+    """TODO: need to provide some comment"""
+
+    @property
+    def name(self) -> str:
+        ...
+
+    def __call__(self, model: IBody2) -> Optional[ValidBodyName]:
+        ...
+
+class SwInsertedPartBodyNameValidator(BodyNameValidator):
+    """TODO: need to provide some comment"""
+
+    @property
+    def name(self) -> str:
+        return str(BodyNameValidationApproach.SW_INSERTED_PART)
+
+    def __call__(self, body: IBody2) -> Optional[ValidBodyName]:
+        # TODO:  need to implement
+        pass
+
+class SwAutoBodyNameValidator(BodyNameValidator):
+    """TODO: need to provide some comment"""
+
+    @property
+    def name(self) -> str:
+        return str(BodyNameValidationApproach.SW_AUTO_NAME)
+
+    def __call__(self, body: IBody2) -> Optional[ValidBodyName]:
+        # TODO:  need to implement
+        pass
+
+class UserBodyNameValidator(BodyNameValidator):
+    """TODO: need to provide some comment"""
+
+    @property
+    def name(self) -> str:
+        return str(BodyNameValidationApproach.USER_NAME)
+
+    def __call__(self, body: IBody2) -> Optional[ValidBodyName]:
+        # TODO:  need to implement
+        pass
+
 
 
 def validate_and_parse_body_name(body: IBody2) -> ValidBodyName:
@@ -90,10 +142,3 @@ def validate_and_parse_body_name(body: IBody2) -> ValidBodyName:
             return ValidBodyName(check_main_name(body_name), None)
     except Exception as error:
         raise Exception(f"body name '{body_name}' has unsatisfied condition -> {error}")
-
-
-def validate_and_parse_bodies_names(bodies: List[IBody2]) -> List[ValidBodyName]:
-    """
-    Validate names of all bodies in list.
-    """
-    return [validate_and_parse_body_name(body) for body in bodies]

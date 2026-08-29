@@ -5,8 +5,6 @@ from typing import TypeAlias, List, Optional, Protocol
 from pyswx.api.sldworks.interfaces import IModelDoc2, IBody2, IBodyFolder
 from pyswx.api.swconst.enumerations import SWBodyFolderFeatureTypE
 
-from . import i_feature_utils
-
 __all__ = [
     'ModelNameValidationApproach',
     'ValidModelName',
@@ -18,8 +16,8 @@ __all__ = [
 
 
 class ModelNameValidationApproach(str, Enum):
-    DEFAULT = 'default'
-    ISO_COMPONENT = 'ISO component'
+    DEFAULT = "user's defined model-name"
+    ISO_COMPONENT = 'ISO component model-name'
 
 
 class ValidModelName:
@@ -68,7 +66,7 @@ class DefaultModelValidator(ModelNameValidator):
 
     @property
     def name(self) -> str:
-        return 'OwnModelValidator'
+        return str(ModelNameValidationApproach.DEFAULT)
 
     def __call__(self, model: IModelDoc2) -> Optional[ValidModelName]:
         model_name = model.get_path_name().stem
@@ -90,7 +88,7 @@ class ISOModelValidator(ModelNameValidator):
 
     @property
     def name(self) -> str:
-        return 'ISOModelValidator'
+        return str(ModelNameValidationApproach.ISO_COMPONENT)
 
     def __call__(self, model: IModelDoc2) -> Optional[ValidModelName]:
         model_name = model.get_path_name().stem

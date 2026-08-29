@@ -79,7 +79,7 @@ class CNCWoodMillingDocCreator(IDocumentCreator):
     # ---
 
     def create(self, save_folder: pathlib.Path):
-        doc_file_path = save_folder / 'CNC_milling_cutting_of_wood.md'
+        doc_file_path = save_folder / 'CNC_milling_of_wood.md'
         try:
             save_folder.mkdir(parents=True, exist_ok=True)
             with open(doc_file_path, "w", encoding="utf-8") as file:

@@ -27,6 +27,8 @@ load_project_task(collection, SWP_FOLDER / "МАСТЕРСКАЯ/Запор-Дл
 load_project_task(collection, SWP_FOLDER / "МАСТЕРСКАЯ/Кинематический-Верстак/V3/kinematic_workbench.py")
 load_project_task(collection, SWP_FOLDER / "МАСТЕРСКАЯ/Держатель-Для-Сварочной-Горелки/welding_torch_holder.py")
 load_project_task(collection, SWP_FOLDER / "МАСТЕРСКАЯ/Поворотный-Стул/rotation_chair.py")
+load_project_task(collection, SWP_FOLDER / "МАСТЕРСКАЯ/Направляющий-Держатель-Для-Перфоратора/punch_guide_holder.py")
 
 # different
 load_project_task(collection, SWP_FOLDER / "РАЗНОЕ/Монополия/monopoly.py")
+load_project_task(collection, SWP_FOLDER / "РАЗНОЕ/Шкатулка/casket.py")

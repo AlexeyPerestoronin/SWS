@@ -42,7 +42,8 @@
             "program": "${workspaceFolder}/.venv/Scripts/invoke.exe",
             "cwd": "${workspaceFolder}",
             "args": [
-                "projects.engineering-wall.prepare-docking-bracket-doc"
+                // "projects.monopoly.prepare-platform-doc"
+                "projects.punch-guide-holder.prepare-metal-manufacturing-doc"
             ],
         }
     ]
