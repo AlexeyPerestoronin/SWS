@@ -1,7 +1,9 @@
+
 import invoke
 import pathlib
 
-from pyswx.api.swconst.enumerations import SWDocumentTypesE, SWBodyTypeE
+from typing import Optional, Set
+from pyswx.api.swconst.enumerations import SWDocumentTypesE
 
 import utils
 
@@ -33,14 +35,25 @@ def bodies_naming(ctx, path: str = None, repair: bool = False):
 
     for same_bodies in unique_bodies:
         utils.status.log_line(f"Detected {len(same_bodies)} same bodies:")
-        has_auto_defined_names = False
-        for (i, (body, component)) in enumerate(same_bodies, 1):
-            valid_body_name = utils.validate_and_parse_body_name(body)
-            if valid_body_name.approach == utils.BodyNameValidationApproach.USER_NAME:
-                utils.info.log_line(f" {i}-body has right name user's defined name '{body.name}'")
-            else:
-                utils.warning.log_line(f" {i}-body has right auto defined name '{body.name}'")
-                has_auto_defined_names = True
+        valid_body_names = [(i, body, utils.validate_and_parse_body_name(body)) for (i, (body, _)) in enumerate(same_bodies, 1)]
+        valid_user_body_names = [(i, body, valid_body_name) for (i, body, valid_body_name) in valid_body_names if valid_body_name.approach == utils.BodyNameValidationApproach.USER_NAME]
+        valid_sw_body_names = [(i, body, valid_body_name) for (i, body, valid_body_name) in valid_body_names if valid_body_name.approach != utils.BodyNameValidationApproach.USER_NAME]
+
+        if len(valid_user_body_names) == 0:
+            raise Exception(f"no one user's defined name for same bodies group: {[body.name for (body, _) in same_bodies]}")
+
+        for (i, body, _) in valid_user_body_names:
+            utils.info.log_line(f" {i}-body has right user's defined name '{body.name}'")
+
+        common_name = '+'.join(set([valid_body_name.main_name for (_, _, valid_body_name) in valid_user_body_names]))
+        last_index = max([0 if not valid_body_name.index else valid_body_name.index for (_, _, valid_body_name) in valid_user_body_names])
+
+        for (i, body, _) in valid_sw_body_names:
+            last_index += 1
+            new_name = "{} {}".format(common_name, last_index)
+            utils.warning.log_line(f" {i}-body has right auto defined name '{body.name}' and {'will be' if repair else 'could be'} renaming to '{new_name}'")
+            if repair:
+                body.name = new_name
 
 
 @invoke.task(help={

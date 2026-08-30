@@ -57,28 +57,39 @@ class BodyNameValidationApproach(str, Enum):
 
 class ValidBodyName:
     MainName: TypeAlias = str
-    SuffixesOpt: TypeAlias = Optional[List[str]]
+    Suffixes: TypeAlias = List[str]
     IndexOpt: TypeAlias = Optional[int]
 
-    def __init__(self, main_name: MainName, suffixes: SuffixesOpt, approach: BodyNameValidationApproach):
+    def __init__(self, main_name: MainName, suffixes: Suffixes, approach: BodyNameValidationApproach):
         self.__main_name = main_name
         self.__suffixes = suffixes
         self.__approach = approach
 
     def __str__(self) -> str:
-        return f"{self.main_name} {self.suffixes}"
+        return f"{self.main_name} {' '.join(self.__suffixes)}"
 
     @property
     def main_name(self) -> MainName:
         return self.__main_name
 
     @property
-    def suffixes(self) -> SuffixesOpt:
+    def suffixes(self) -> Suffixes:
         return self.__suffixes
 
     @property
-    def suffixes(self) -> IndexOpt:
-        return self.__suffixes
+    def index(self) -> IndexOpt:
+        index = None
+        for suffix in self.__suffixes:
+            try:
+                number = float(suffix)
+            except ValueError:
+                continue
+            if number.is_integer():
+                if not index:
+                    index = int(number)
+                else:
+                    raise Exception(f"more then one suffixes are satisfying of index for body '{self.__main_name} {' '.join(self.__suffixes)}'")
+        return index
 
     @property
     def approach(self) -> BodyNameValidationApproach:
@@ -110,7 +121,7 @@ class SwInsertedPartBodyNameValidator(BodyNameValidator):
         if match:
             main_name = match.group('main_name')
             index = match.group('index')
-            return ValidBodyName(main_name, [index] if index else None, BodyNameValidationApproach.SW_INSERTED_PART)
+            return ValidBodyName(main_name, [index] if index else [], BodyNameValidationApproach.SW_INSERTED_PART)
         return None
 
 
@@ -126,7 +137,7 @@ class SwAutoBodyNameValidator(BodyNameValidator):
         # CirPattern, Boss-Extrude, Cut-Extrude, Move/Copy1, etc.
         body_name_pattern = r'(Extrude|Revolve|Pattern|Move|Copy)'
         if re.search(body_name_pattern, body_name):
-            return ValidBodyName(body_name, None, BodyNameValidationApproach.SW_AUTO_NAME)
+            return ValidBodyName(body_name, [], BodyNameValidationApproach.SW_AUTO_NAME)
         return None
 
 
@@ -165,7 +176,7 @@ class UserBodyNameValidator(BodyNameValidator):
             main_name = check_main_name(body_name)
             if main_name is None:
                 return None
-            return ValidBodyName(main_name, None, BodyNameValidationApproach.USER_NAME)
+            return ValidBodyName(main_name, [], BodyNameValidationApproach.USER_NAME)
 
 
 def validate_and_parse_body_name(body: IBody2, *, validators: List[BodyNameValidator] = [
