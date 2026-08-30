@@ -69,6 +69,10 @@ class ValidBodyName:
         return f"{self.main_name} {' '.join(self.__suffixes)}"
 
     @property
+    def approach(self) -> BodyNameValidationApproach:
+        return self.__approach
+
+    @property
     def main_name(self) -> MainName:
         return self.__main_name
 
@@ -92,8 +96,8 @@ class ValidBodyName:
         return index
 
     @property
-    def approach(self) -> BodyNameValidationApproach:
-        return self.__approach
+    def has_new(self) -> bool:
+        return 'new' in self.__suffixes
 
 
 class BodyNameValidator(Protocol):
@@ -156,7 +160,7 @@ class UserBodyNameValidator(BodyNameValidator):
             return main_name
 
         def check_name_suffixes(body_suffixes: List[str]) -> List[str]:
-            available_suffixes = [r'R', r'П', r'L', r'Л', r'U', r'В', r'D', r'Н', r'F', r'B', r'\d+']
+            available_suffixes = ['R', 'П', 'L', 'Л', 'U', 'В', 'D', 'Н', 'F', 'B', r'\d+', 'new']
             validated_suffixes = []
             for body_suffix in body_suffixes:
                 if any([bool(re.match(available_suffix, body_suffix)) for available_suffix in available_suffixes]):
