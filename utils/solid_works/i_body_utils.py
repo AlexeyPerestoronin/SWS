@@ -139,7 +139,7 @@ class SwAutoBodyNameValidator(BodyNameValidator):
     def __call__(self, body: IBody2) -> Optional[ValidBodyName]:
         body_name = body.name
         # CirPattern, Boss-Extrude, Cut-Extrude, Move/Copy1, etc.
-        body_name_pattern = r'(Extrude|Revolve|Pattern|Move|Copy)'
+        body_name_pattern = r'(Extrude|Revolve|Pattern|Move|Copy|Fillet)'
         if re.search(body_name_pattern, body_name):
             return ValidBodyName(body_name, [], BodyNameValidationApproach.SW_AUTO_NAME)
         return None
