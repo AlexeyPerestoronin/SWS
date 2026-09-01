@@ -6,45 +6,31 @@
     "console": "integratedTerminal",
     "configurations": [
         {
-            "name": "Debug: export.step-from-part",
+            "name": "Debug invoke-task",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/.venv/Scripts/invoke.exe",
             "cwd": "${workspaceFolder}",
             "args": [
-                "export.step-from-part",
-                "--execute",
-                "--path",
-                "${workspaceFolder}/../SWP/Projects/МАСТЕРСКАЯ/Canopy/Крыша.SLDPRT",
-                "--save-subfolder",
-                "STEP-3",
+                "projects.monopoly.prepare-wood-doc"
+                //"check.body-naming", "--path=C:/MyLife/SWP/Projects/РАЗНОЕ/Монополия/Карта.SLDPRT", "--repair"
             ],
         },
+        // "projects.casket.prepare-metal-manufacturing-doc"
+        // "projects.punch-guide-holder.prepare-metal-manufacturing-doc"
         {
-            "name": "Debug: export.step-from-assembly",
+            "name": "Profile invoke-task",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/.venv/Scripts/invoke.exe",
+            "module": "cProfile", // Указываем VS Code запустить профилировщик как модуль
+            "python": "${workspaceFolder}/.venv/Scripts/python.exe",
             "cwd": "${workspaceFolder}",
             "args": [
-                "export.step-from-assembly",
-                "--execute",
-                "--path",
-                "${workspaceFolder}/../SWP/Projects/МАСТЕРСКАЯ/Canopy/Canopy-TI.SLDASM",
-                "--save-subfolder",
-                "STEP-1",
+                "-o", "${workspaceFolder}/invoke_task.prof", // Файл отчета
+                "-m", "invoke", "projects.monopoly.prepare-wood-doc",
             ],
-        },
-        {
-            "name": "Debug: projects.mm-v-iv.make-doc",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/.venv/Scripts/invoke.exe",
-            "cwd": "${workspaceFolder}",
-            "args": [
-                // "projects.monopoly.prepare-platform-doc"
-                "projects.punch-guide-holder.prepare-metal-manufacturing-doc"
-            ],
+            "console": "integratedTerminal",
         }
+
     ]
 }
