@@ -153,6 +153,7 @@ class UserBodyNameValidator(BodyNameValidator):
         return str(BodyNameValidationApproach.USER_NAME)
 
     def __call__(self, body: IBody2) -> Optional[ValidBodyName]:
+
         def check_main_name(main_name: str) -> Optional[str]:
             main_name_pattern = r'\w+(-\w)*'
             if not bool(re.match(main_name_pattern, main_name)):
@@ -183,11 +184,13 @@ class UserBodyNameValidator(BodyNameValidator):
             return ValidBodyName(main_name, [], BodyNameValidationApproach.USER_NAME)
 
 
-def validate_and_parse_body_name(body: IBody2, *, validators: List[BodyNameValidator] = [
-        SwInsertedPartBodyNameValidator(),
-        SwAutoBodyNameValidator(),
-        UserBodyNameValidator(),
-]) -> ValidBodyName:
+def validate_and_parse_body_name(body: IBody2,
+                                 *,
+                                 validators: List[BodyNameValidator] = [
+                                     SwInsertedPartBodyNameValidator(),
+                                     SwAutoBodyNameValidator(),
+                                     UserBodyNameValidator(),
+                                 ]) -> ValidBodyName:
     """Validate and parse name of the SW-IBody2."""
 
     for validator in validators:

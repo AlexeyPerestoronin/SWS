@@ -22,7 +22,31 @@
                 "--exclude",
                 "${workspaceFolder}/.venv/**"
             ],
-            "problemMatcher": []
+        },
+        {
+            "label": "Check and repair body naming",
+            "type": "shell",
+            "group": "none",
+            "command": "${workspaceFolder}/.venv/Scripts/python.exe",
+            "args": [
+                "-m",
+                    "invoke",
+                        "check.body-naming",
+                            "--path=C:/MyLife/Monopoly 2.0/проектирование/игровое поле/Карта-v2.SLDPRT",
+                            "--repair"
+            ],
+        },
+        {
+            "label": "Export step",
+            "type": "shell",
+            "group": "none",
+            "command": "${workspaceFolder}/.venv/Scripts/python.exe",
+            "args": [
+                "-m",
+                    "invoke",
+                        "export.step",
+                            "--path=C:/MyLife/Monopoly 2.0/проектирование/игровое поле/Карта-v2.SLDPRT"
+            ],
         }
     ]
 }

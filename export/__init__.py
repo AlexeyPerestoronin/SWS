@@ -23,11 +23,12 @@ def step(ctx, path: str = None, doc_path: str = None):
     unique_bodies_manager.add_from_project(project_path)
     saving_groups = utils.prepare_saving_groups(unique_bodies_manager.unique_bodies)
 
-    doc_folder = pathlib.Path(doc_path) if doc_path else project_path.parent  / 'DOC' / f"step-export {datetime.now().strftime('%Y-%m-%d_%H-%M')}"
+    doc_folder = pathlib.Path(doc_path) if doc_path else project_path.parent / 'DOC' / f"step-export {datetime.now().strftime('%Y-%m-%d_%H-%M')}"
     shutil.rmtree(doc_folder, ignore_errors=True)
 
     polywood = utils.doc_creator.StandardElementsTable(saving_groups)
     polywood.prepare_data([f".+"], step=True, dxf=False, save_folder_opt=doc_folder)
+
 
 collection = invoke.Collection()
 collection.add_task(step)

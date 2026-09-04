@@ -1,4 +1,3 @@
-
 import invoke
 import pathlib
 
@@ -45,10 +44,7 @@ def bodies_naming(ctx, path: str = None, repair: bool = False):
     for same_bodies in unique_body_manager.unique_bodies:
         utils.status.log_line(f"Detected {len(same_bodies)} same bodies:")
 
-        parsed = [
-            (i, body, utils.validate_and_parse_body_name(body))
-            for i, (body, _) in enumerate(same_bodies, 1)
-        ]
+        parsed = [(i, body, utils.validate_and_parse_body_name(body)) for i, (body, _) in enumerate(same_bodies, 1)]
         user_bodies = [(i, body, name) for i, body, name in parsed if name.approach == user_approach]
         user_new = [(i, body, name) for i, body, name in user_bodies if name.has_new]
         sw_bodies = [(i, body, name) for i, body, name in parsed if name.approach != user_approach]
@@ -62,7 +58,9 @@ def bodies_naming(ctx, path: str = None, repair: bool = False):
         if user_new:
             common_name = user_new[0][2].main_name
             last_index = rename_indexed(
-                user_bodies, common_name, 0,
+                user_bodies,
+                common_name,
+                0,
                 lambda i, old, new: f" {i}-body has right user's defined name '{old}' but {'will be' if repair else 'should be'} renaming to '{new}'",
             )
         else:
@@ -72,7 +70,9 @@ def bodies_naming(ctx, path: str = None, repair: bool = False):
                 utils.info.log_line(f" {i}-body has right user's defined name '{body.name}'")
 
         rename_indexed(
-            sw_bodies, common_name, last_index,
+            sw_bodies,
+            common_name,
+            last_index,
             lambda i, old, new: f" {i}-body has right auto defined name '{old}' and {'will be' if repair else 'could be'} renaming to '{new}'",
         )
 

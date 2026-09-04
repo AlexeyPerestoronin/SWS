@@ -13,8 +13,6 @@
             "cwd": "${workspaceFolder}",
             "args": [
                 "projects.monopoly.prepare-wood-doc"
-                //"check.body-naming", "--path=C:/MyLife/SWP/Projects/РАЗНОЕ/Монополия/Карта.SLDPRT", "--repair"
-                // "export.step", "--path=C:/MyLife/SWP/Projects/МАСТЕРСКАЯ/разное/Кронштейн-Лампы-Электрощитка/Кронштейн-Лампы-Электрощитка.SLDPRT"
             ],
         },
         // "projects.casket.prepare-metal-manufacturing-doc"
