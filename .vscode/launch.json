@@ -12,7 +12,8 @@
             "program": "${workspaceFolder}/.venv/Scripts/invoke.exe",
             "cwd": "${workspaceFolder}",
             "args": [
-                "projects.monopoly.prepare-wood-doc"
+                //"projects.monopoly.prepare-organizers-doc"
+                "projects.engineering-wall.prepare-metal-shelf-doc"
             ],
         },
         // "projects.casket.prepare-metal-manufacturing-doc"
