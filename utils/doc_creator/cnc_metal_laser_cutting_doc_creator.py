@@ -68,6 +68,9 @@ class CNCMetalLaserCuttingDocCreator(IDocumentCreator):
     def add_50_25_2mm_steel_profile_tube_table(self, table: TableDataPreparator) -> 'CNCMetalLaserCuttingDocCreator':
         return self.add_table('Труба профильная стальная 50x25x2мм', table, 'https://купитьметалл.рф/product/truba-pryamougol-50x25x2')
 
+    def add_40_20_2mm_steel_profile_tube_table(self, table: TableDataPreparator) -> 'CNCMetalLaserCuttingDocCreator':
+        return self.add_table('Труба профильная стальная 40x20x2мм', table, 'https://купитьметалл.рф/product/truba-pryamougol-40x20x2')
+
     # profile-angle
 
     def add_25_25_4mm_steel_profile_angle_table(self, table: TableDataPreparator) -> 'CNCMetalLaserCuttingDocCreator':

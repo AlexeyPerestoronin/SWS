@@ -17,17 +17,17 @@ collection = invoke.Collection()
 
 SWP_FOLDER = pathlib.Path("C:/MyLife/SWP/Projects")
 
-# tests
-load_project_task(collection, SWP_FOLDER / "Тесты/tests.py")
-
 # workshop
 # load_project_task(collection, SWP_FOLDER / "МАСТЕРСКАЯ/Верстак-Dim1000x600x50/workbench_1000x600x50.py")
 # load_project_task(collection, SWP_FOLDER / "МАСТЕРСКАЯ/Инженерная-Стенка/V4/engineering_wall.py")
+load_project_task(collection, SWP_FOLDER / "МАСТЕРСКАЯ/Инженерный-Навес/engineering_canopy.py")
 # load_project_task(collection, SWP_FOLDER / "МАСТЕРСКАЯ/Кинематический-Верстак/V3/kinematic_workbench.py")
-# load_project_task(collection, SWP_FOLDER / "МАСТЕРСКАЯ/разное/Запор-Для-Улитка-Ворот/gate_latch.py")
+load_project_task(collection, SWP_FOLDER / "МАСТЕРСКАЯ/разное/Запор-Для-Улитка-Ворот/gate_latch.py")
 # load_project_task(collection, SWP_FOLDER / "МАСТЕРСКАЯ/разное/Держатель-Для-Сварочной-Горелки/welding_torch_holder.py")
-load_project_task(collection, SWP_FOLDER / "МАСТЕРСКАЯ/разное/Кронштейн-Для-Вытяжки/range_hood_holder.py")
-load_project_task(collection, SWP_FOLDER / "МАСТЕРСКАЯ/разное/Держатель-Штатива-Камеры/cam_tripod_holder.py")
+# load_project_task(collection, SWP_FOLDER / "МАСТЕРСКАЯ/разное/Кронштейн-Для-Вытяжки/range_hood_holder.py")
+# load_project_task(collection, SWP_FOLDER / "МАСТЕРСКАЯ/разное/Держатель-Штатива-Камеры/cam_tripod_holder.py")
+load_project_task(collection, SWP_FOLDER / "МАСТЕРСКАЯ/разное/Поворотный-Держатель-Бруска/swivel_block_holder.py")
+load_project_task(collection, SWP_FOLDER / "МАСТЕРСКАЯ/разное/Кронштейн-Многоколенчатый/multi_joint_bracket.py")
 # load_project_task(collection, SWP_FOLDER / "МАСТЕРСКАЯ/разное/Поворотный-Стул/rotation_chair.py")
 # load_project_task(collection, SWP_FOLDER / "МАСТЕРСКАЯ/разное/Направляющий-Держатель-Для-Перфоратора/punch_guide_holder.py")
 

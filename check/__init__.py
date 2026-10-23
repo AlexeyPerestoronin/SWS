@@ -20,7 +20,7 @@ def project_naming(ctx, path: str = None):
 
 @invoke.task(help={
     'path': 'path to SW-project bodies in which should be checked',
-    'repair': 'if True wrong names will be renaming (by default: False)',
+    'repair': 'if True wrong names will be renaming (by default: False) (use `new` suffix for mass renaming)',
 })
 def bodies_naming(ctx, path: str = None, repair: bool = False):
     """
